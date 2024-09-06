@@ -3,8 +3,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet"
 import { Shield, Zap, Code, Bot, Database, Menu, DollarSign, Check, Wrench } from "lucide-react"
 import { getCurrentYear } from "@/utils/dateUtils"
+import { SignInButton, SignUpButton, useUser } from "@clerk/clerk-react"
 
 export default function App() {
+  const { isSignedIn, user } = useUser();
+
   return (
     <div className="min-h-screen bg-black text-white relative">
       <div className="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none"></div>
@@ -20,28 +23,38 @@ export default function App() {
               </SheetTrigger>
               <SheetContent
                 side="right"
-                className="w-[300px] sm:w-[400px] bg-gray-900 border-gray-800 text-white"
+                className="w-[300px] sm:w-[400px] bg-black border-white/20 text-white"
               >
                 <SheetHeader>
                   <SheetTitle className="text-left text-white">stopscraping.me</SheetTitle>
                   <SheetDescription className="sr-only">
                     This menu provides navigation options and account actions.
                   </SheetDescription>
-                  <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-gray-900 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-gray-800">
+                  <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-black transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-white/10">
                     <span className="sr-only">Close</span>
                   </SheetClose>
                 </SheetHeader>
                 <div className="mt-6 flex flex-col gap-4">
-                  <Button variant="outline" className="w-full bg-transparent hover:bg-gray-800 text-white border-gray-600 hover:border-white transition-colors duration-300">
-                    Log In
-                  </Button>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-300">
-                    Sign Up
-                  </Button>
+                  {isSignedIn ? (
+                    <Button variant="outline" className="w-full bg-transparent hover:bg-white/10 text-white border-white/20 hover:border-white/40 transition-colors duration-300">
+                      {user.firstName || 'Account'}
+                    </Button>
+                  ) : (
+                    <SignInButton mode="modal">
+                      <Button variant="outline" className="w-full bg-transparent hover:bg-white/10 text-white border-white/20 hover:border-white/40 transition-colors duration-300">
+                        Log In
+                      </Button>
+                    </SignInButton>
+                  )}
+                  <SignUpButton mode="modal">
+                    <Button className="w-full bg-white text-black hover:bg-white/90 transition-colors duration-300">
+                      Sign Up
+                    </Button>
+                  </SignUpButton>
                 </div>
                 <SheetFooter className="absolute bottom-4 left-4 right-4">
                   <SheetClose asChild>
-                    <Button variant="ghost" className="w-full text-gray-400 hover:text-white hover:bg-gray-800">
+                    <Button variant="ghost" className="w-full text-gray-400 hover:text-white hover:bg-white/10">
                       Close
                     </Button>
                   </SheetClose>
@@ -50,8 +63,20 @@ export default function App() {
             </Sheet>
           </div>
           <div className="hidden md:flex space-x-4">
-            <Button variant="outline" className="bg-transparent hover:bg-white/10 text-white border-white/20 hover:border-white/40 transition-all duration-300">Log In</Button>
-            <Button className="bg-white text-black hover:bg-white/90 transition-all duration-300">Sign Up</Button>
+            {isSignedIn ? (
+              <Button variant="outline" className="bg-transparent hover:bg-white/10 text-white border-white/20 hover:border-white/40 transition-all duration-300">
+                {user.firstName || 'Account'}
+              </Button>
+            ) : (
+              <SignInButton mode="modal">
+                <Button variant="outline" className="bg-transparent hover:bg-white/10 text-white hover:text-white border-white/20 hover:border-white/40 transition-all duration-300">
+                  Log In
+                </Button>
+              </SignInButton>
+            )}
+            <SignUpButton mode="modal">
+              <Button className="bg-white text-black hover:bg-white/90 transition-all duration-300">Sign Up</Button>
+            </SignUpButton>
           </div>
         </header>
 
