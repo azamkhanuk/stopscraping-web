@@ -6,8 +6,8 @@ import { getCurrentYear } from "@/utils/dateUtils"
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-white relative">
-      <div className="absolute inset-0 bg-noise opacity-[0.05] pointer-events-none"></div>
+    <div className="min-h-screen bg-black text-white relative">
+      <div className="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none"></div>
       <div className="relative z-10">
         <header className="container mx-auto px-4 py-6 flex justify-between items-center">
           <h1 className="text-2xl font-bold">stopscraping.me</h1>
@@ -50,21 +50,21 @@ export default function App() {
             </Sheet>
           </div>
           <div className="hidden md:flex space-x-4">
-            <Button variant="outline" className="bg-transparent hover:bg-transparent text-white border-gray-600 hover:border-white transition-colors duration-300">Log In</Button>
-            <Button className="bg-blue-600 hover:bg-blue-600 border border-transparent hover:border-white transition-colors duration-300">Sign Up</Button>
+            <Button variant="outline" className="bg-transparent hover:bg-white/10 text-white border-white/20 hover:border-white/40 transition-all duration-300">Log In</Button>
+            <Button className="bg-white text-black hover:bg-white/90 transition-all duration-300">Sign Up</Button>
           </div>
         </header>
 
         <main className="container mx-auto px-4 py-8 flex-grow flex flex-col justify-center">
-          <section className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Tired of Getting DDoS'd by AI Companies?</h2>
-            <p className="text-xl text-gray-300 mb-8">Get an always-updated list of AI scrapers' IPs to block. Currently focused on OpenAI, with more coming soon.</p>
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-600 border border-transparent hover:border-white transition-colors duration-300">
+          <section className="text-center mb-20">
+            <h2 className="text-5xl font-bold pb-6 bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text">Tired of Getting DDoS'd by AI Companies?</h2>
+            <p className="text-xl text-gray-300 mb-10">Get an always-updated list of AI scrapers' IPs to block. Currently focused on OpenAI, with more coming soon.</p>
+            <Button size="lg" className="bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
               Block AI Scrapers Now
             </Button>
           </section>
 
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {[
               { icon: Bot, title: "Up-to-Date IP List", description: "Daily updates ensure you're always blocking the latest known AI scraper IPs." },
               { icon: Zap, title: "Lightning Fast", description: "Minimal impact on your website's performance and user experience." },
@@ -74,18 +74,24 @@ export default function App() {
               { icon: DollarSign, title: "Simple pricing", description: "Flexible fortification: Daily updates for less than your coffee." },
 
             ].map((feature, index) => (
-              <Card key={index} className="bg-gray-800 bg-opacity-50 backdrop-blur-sm border-gray-700 hover:bg-opacity-70 transition-all duration-300 flex flex-col justify-between group">
+              <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all duration-300 flex flex-col justify-between group">
                 <CardHeader>
-                  <feature.icon className="w-10 h-10 mb-3 text-blue-400 group-hover:text-blue-300 transition-colors duration-300" aria-hidden="true" />
+                  <feature.icon className="w-10 h-10 mb-3 text-purple-300 group-hover:text-pink-300 transition-colors duration-300" aria-hidden="true" />
                   <CardTitle className="text-gray-100 group-hover:text-white transition-colors duration-300">{feature.title}</CardTitle>
-                  <CardDescription className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">{feature.description}</CardDescription>
+                  <CardDescription className="text-gray-300 group-hover:text-gray-200 transition-colors duration-300">{feature.description}</CardDescription>
                 </CardHeader>
               </Card>
             ))}
           </section>
+
+          <section className="text-center mt-12">
+            <Button size="lg" className="bg-white text-black hover:bg-gray-200 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1">
+              Get Started for Free
+            </Button>
+          </section>
         </main>
 
-        <footer className="container mx-auto px-4 py-6 text-center text-gray-400 text-sm">
+        <footer className="container mx-auto px-4 py-6 text-center text-gray-500 text-sm">
           <p>&copy; {getCurrentYear()} stopscraping.me | Empowering digital autonomy</p>
         </footer>
       </div>
