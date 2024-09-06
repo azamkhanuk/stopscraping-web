@@ -1,8 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from "@clerk/clerk-react";
 import { supabase } from '../lib/supabase';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { AlertTriangle } from "lucide-react";
+import { LoadingSpinner } from './LoadingSpinner';
 
 interface ApiKey {
     id: string;
@@ -10,12 +21,14 @@ interface ApiKey {
     tier: string;
     is_active: boolean;
     created_at: string;
+    user_id: string; // Add this line
 }
 
 export function ApiKeyManagement() {
     const { user } = useUser();
     const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -101,8 +114,13 @@ export function ApiKeyManagement() {
         }
     };
 
+    const handleDeleteAccount = async () => {
+        setIsDeleteDialogOpen(false);
+        await deleteAccount();
+    };
+
     if (loading) {
-        return <div>Loading...</div>;
+        return <LoadingSpinner />;
     }
 
     return (
@@ -139,9 +157,41 @@ export function ApiKeyManagement() {
                 ))}
             </div>
             <div className="mt-12 text-center">
-                <Button onClick={deleteAccount} variant="destructive">
-                    Delete Account
-                </Button>
+                <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="destructive">
+                            Delete Account
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                                <AlertTriangle className="h-5 w-5 text-red-500" />
+                                Confirm Account Deletion
+                            </DialogTitle>
+                            <DialogDescription>
+                                This action cannot be undone. This will permanently delete your
+                                account and remove your data from our servers.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="sm:justify-start">
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                onClick={handleDeleteAccount}
+                            >
+                                Yes, delete my account
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsDeleteDialogOpen(false)}
+                            >
+                                Cancel
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
     );
