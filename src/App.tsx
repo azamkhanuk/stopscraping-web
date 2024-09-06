@@ -118,7 +118,7 @@ export default function App() {
                   price: "$0",
                   features: [
                     "Static list of OpenAI IPs, updated weekly",
-                    "Limited API calls (100/day)",
+                    "Limited API calls (10/day)",
                   ],
                   cta: "Get Started",
                   disabled: false,
@@ -128,7 +128,7 @@ export default function App() {
                   price: "$5/month",
                   features: [
                     "Daily IP updates",
-                    "Increased API call limit (1000/day)",
+                    "Increased API call limit (100/day)",
                     "Additional AI company IPs as they get added in",
                     { text: "Email notifications for significant list changes", inProgress: true },
                   ],
