@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet"
-import { Shield, Zap, Lock, Code, Bot, Database, Menu, X } from "lucide-react"
+import { Shield, Zap, Code, Bot, Database, Menu, DollarSign } from "lucide-react"
+import { getCurrentYear } from "@/utils/dateUtils"
 
-export default function Component() {
+export default function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-white relative">
       <div className="absolute inset-0 bg-noise opacity-[0.05] pointer-events-none"></div>
@@ -56,21 +57,22 @@ export default function Component() {
 
         <main className="container mx-auto px-4 py-8 flex-grow flex flex-col justify-center">
           <section className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Protect Your Data from AI Scraping</h2>
-            <p className="text-xl text-gray-300 mb-8">Our advanced API ensures your valuable data remains secure from AI-powered scraping attempts.</p>
+            <h2 className="text-4xl font-bold mb-4">Tired of Getting DDoS'd by AI Companies?</h2>
+            <p className="text-xl text-gray-300 mb-8">Get an always-updated list of AI scrapers' IPs to block. Currently focused on OpenAI, with more coming soon.</p>
             <Button size="lg" className="bg-blue-600 hover:bg-blue-600 border border-transparent hover:border-white transition-colors duration-300">
-              Get Started Now
+              Block AI Scrapers Now
             </Button>
           </section>
 
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {[
-              { icon: Shield, title: "AI Detection", description: "Identify and block AI-powered scraping attempts in real-time." },
+              { icon: Bot, title: "Up-to-Date IP List", description: "Daily updates ensure you're always blocking the latest known AI scraper IPs." },
               { icon: Zap, title: "Lightning Fast", description: "Minimal impact on your website's performance and user experience." },
-              { icon: Lock, title: "Data Protection", description: "Keep your sensitive information safe from unauthorized access." },
-              { icon: Code, title: "Easy Integration", description: "Simple API calls to implement protection on your website." },
-              { icon: Bot, title: "Bot Mitigation", description: "Advanced techniques to differentiate between good bots and malicious ones." },
-              { icon: Database, title: "Data Insights", description: "Gain valuable insights into scraping attempts and patterns." },
+              { icon: Shield, title: "Expandable Protection", description: "As we add more AI companies to our block list, your protection grows automatically." },
+              { icon: Code, title: "Easy Integration", description: "Simple API calls to retrieve the latest IP list for your deny list." },
+              { icon: Database, title: "Developer Friendly", description: "Designed with developers in mind, for seamless integration into your existing setup." },
+              { icon: DollarSign, title: "Simple pricing", description: "Flexible fortification: Daily updates for less than your coffee." },
+
             ].map((feature, index) => (
               <Card key={index} className="bg-gray-800 bg-opacity-50 backdrop-blur-sm border-gray-700 hover:bg-opacity-70 transition-all duration-300 flex flex-col justify-between group">
                 <CardHeader>
@@ -84,7 +86,7 @@ export default function Component() {
         </main>
 
         <footer className="container mx-auto px-4 py-6 text-center text-gray-400 text-sm">
-          <p>&copy; 2023 DataShield API. All rights reserved.</p>
+          <p>&copy; {getCurrentYear()} stopscraping.me | Empowering digital autonomy</p>
         </footer>
       </div>
     </div>
