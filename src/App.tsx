@@ -5,8 +5,9 @@ import { Header } from "./components/Header"
 import { Hero } from "./components/Hero"
 import { FeatureGrid } from "./components/FeatureGrid"
 import { PricingPlans } from "./components/PricingPlans"
-import { Button } from "@/components/ui/button"
+import { PlanSelection } from "./components/PlanSelection"
 import { LoadingSpinner } from "./components/LoadingSpinner"
+import { Navigate, Route, Routes } from "react-router-dom"
 
 export default function App() {
   const { isSignedIn, isLoaded } = useUser();
@@ -22,20 +23,23 @@ export default function App() {
         <Header />
 
         <main className="container mx-auto px-4 py-8 flex-grow flex flex-col justify-center">
-          {isSignedIn ? (
-            <ApiKeyManagement />
-          ) : (
-            <>
-              <Hero />
-              <FeatureGrid />
-              <PricingPlans />
-              <section className="text-center mt-12">
-                <Button size="lg" className="bg-white text-black hover:bg-gray-200 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1">
-                  Get Started for Free
-                </Button>
-              </section>
-            </>
-          )}
+          <Routes>
+            <Route path="/" element={
+              isSignedIn ? <Navigate to="/select-plan" /> : (
+                <>
+                  <Hero />
+                  <FeatureGrid />
+                  <PricingPlans />
+                </>
+              )
+            } />
+            <Route path="/select-plan" element={
+              isSignedIn ? <PlanSelection /> : <Navigate to="/" />
+            } />
+            <Route path="/api-keys" element={
+              isSignedIn ? <ApiKeyManagement /> : <Navigate to="/" />
+            } />
+          </Routes>
         </main>
         <Footer />
       </div>

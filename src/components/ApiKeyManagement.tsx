@@ -21,7 +21,7 @@ interface ApiKey {
     tier: string;
     is_active: boolean;
     created_at: string;
-    user_id: string; // Add this line
+    user_id: string;
 }
 
 export function ApiKeyManagement() {
@@ -37,11 +37,13 @@ export function ApiKeyManagement() {
     }, [user]);
 
     const fetchApiKeys = async () => {
+        if (!user?.id) return;
+
         setLoading(true);
         const { data, error } = await supabase
             .from('api_keys')
             .select('*')
-            .eq('user_id', user!.id);
+            .eq('user_id', user.id);
 
         if (error) {
             console.error('Error fetching API keys:', error);
@@ -52,16 +54,36 @@ export function ApiKeyManagement() {
     };
 
     const generateApiKey = async (tier: string) => {
+        if (!user?.id) return;
+
         const newApiKey = crypto.randomUUID();
         const { data, error } = await supabase
             .from('api_keys')
-            .insert({ api_key: newApiKey, tier, user_id: user!.id })
+            .upsert({
+                api_key: newApiKey,
+                tier,
+                user_id: user.id
+            }, {
+                onConflict: 'user_id,tier',
+                update: { api_key: newApiKey }
+            })
             .select();
 
         if (error) {
             console.error('Error generating API key:', error);
         } else {
-            setApiKeys([...apiKeys, data[0]]);
+            setApiKeys(prevKeys => {
+                const index = prevKeys.findIndex(key => key.user_id === user?.id && key.tier === tier);
+                if (index !== -1) {
+                    // Update existing key
+                    const updatedKeys = [...prevKeys];
+                    updatedKeys[index] = data[0];
+                    return updatedKeys;
+                } else {
+                    // Add new key
+                    return [...prevKeys, data[0]];
+                }
+            });
         }
     };
 
@@ -95,11 +117,13 @@ export function ApiKeyManagement() {
     };
 
     const deleteAccount = async () => {
+        if (!user?.id) return;
+
         // Delete all API keys
         const { error: deleteKeysError } = await supabase
             .from('api_keys')
             .delete()
-            .eq('user_id', user!.id);
+            .eq('user_id', user.id);
 
         if (deleteKeysError) {
             console.error('Error deleting API keys:', deleteKeysError);
@@ -108,7 +132,7 @@ export function ApiKeyManagement() {
 
         // Delete Clerk user
         try {
-            await user!.delete();
+            await user.delete();
         } catch (error) {
             console.error('Error deleting Clerk user:', error);
         }
@@ -119,6 +143,10 @@ export function ApiKeyManagement() {
         await deleteAccount();
     };
 
+    const userTier = typeof user?.unsafeMetadata?.pricingPlan === 'string'
+        ? user.unsafeMetadata.pricingPlan
+        : "free";
+
     if (loading) {
         return <LoadingSpinner />;
     }
@@ -126,6 +154,7 @@ export function ApiKeyManagement() {
     return (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-3xl font-bold mb-6">API Key Management</h2>
+            <p className="text-xl mb-6">Current Plan: <span className="capitalize font-semibold">{userTier}</span></p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 {['free', 'basic', 'pro'].map((tier) => (
                     <Card key={tier} className="bg-white/10 backdrop-blur-sm border-white/20">

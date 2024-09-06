@@ -12,6 +12,7 @@ const pricingTiers = [
         ],
         cta: "Get Started",
         disabled: false,
+        plan: "free"
     },
     {
         title: "Basic Tier",
@@ -24,6 +25,7 @@ const pricingTiers = [
         ],
         cta: "Subscribe Now",
         disabled: false,
+        plan: "basic"
     },
     {
         title: "Pro Tier",
@@ -37,10 +39,11 @@ const pricingTiers = [
         ],
         cta: "Coming Soon",
         disabled: true,
+        plan: "pro"
     },
 ]
 
-export function PricingPlans() {
+export function PricingPlans({ onPlanSelect }: { onPlanSelect?: (plan: string) => void }) {
     return (
         <section className="mt-20 mb-12">
             <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text">Choose Your Plan</h2>
@@ -77,6 +80,7 @@ export function PricingPlans() {
                             <Button
                                 className={`w-full ${tier.disabled ? 'bg-gray-700 text-gray-400' : 'bg-purple-600 hover:bg-purple-700 text-white'} transition-all duration-300 py-6`}
                                 disabled={tier.disabled}
+                                onClick={() => onPlanSelect && onPlanSelect(tier.plan)}
                             >
                                 {tier.cta}
                             </Button>
