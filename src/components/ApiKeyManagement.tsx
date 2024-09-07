@@ -8,6 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { LoadingSpinner } from './LoadingSpinner';
+import { ToastAction } from "@/components/ui/toast";
+import { RefreshCw, Check } from "lucide-react";
+import { useToast, type ToastActionElement } from '@/hooks/use-toast';
 
 interface ApiKey {
     id: string;
@@ -20,6 +23,7 @@ interface ApiKey {
 
 export function ApiKeyManagement() {
     const { user } = useUser();
+    const { toast } = useToast();
     const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
     const [loading, setLoading] = useState(true);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -41,27 +45,77 @@ export function ApiKeyManagement() {
 
         if (error) {
             console.error('Error fetching API keys:', error);
+            toast({
+                title: "Error",
+                description: "Failed to fetch API keys. Please try again.",
+                duration: 2000,
+            });
         } else {
             setApiKeys(data || []);
         }
         setLoading(false);
     };
 
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text).then(() => {
+            toast({
+                title: "Copied",
+                description: "API key copied to clipboard",
+                duration: 1000,
+            });
+        }).catch((err) => {
+            console.error('Failed to copy text: ', err);
+            toast({
+                title: "Error",
+                description: "Failed to copy API key",
+                duration: 1000,
+            });
+        });
+    };
+
     const regenerateApiKey = async () => {
         if (!user?.id || apiKeys.length === 0) return;
 
+        setLoading(true);
+        toast({
+            title: "Generating new API key",
+            description: "Please wait while we create your new key...",
+            duration: 2000,
+        });
+
         const newApiKey = crypto.randomUUID();
+
         const { data, error } = await supabase
             .from('api_keys')
             .update({ api_key: newApiKey })
-            .eq('id', apiKeys[0].id)
+            .eq('user_id', user.id)
+            .eq('tier', apiKeys[0].tier)
             .select();
 
         if (error) {
             console.error('Error regenerating API key:', error);
-        } else {
+            toast({
+                title: "Error",
+                description: "Failed to generate a new API key. Please try again.",
+                duration: 2000,
+            });
+        } else if (data && data.length > 0) {
             setApiKeys([data[0]]);
+            toast({
+                title: "Success",
+                description: "New API key generated successfully!",
+                icon: <Check className="h-4 w-4 text-green-500" />,
+                duration: 2000,
+            });
+        } else {
+            console.error('No data returned after updating API key');
+            toast({
+                title: "Error",
+                description: "An unexpected error occurred. Please try again.",
+                duration: 2000,
+            });
         }
+        setLoading(false);
     };
 
     const deleteAccount = async () => {
@@ -75,14 +129,29 @@ export function ApiKeyManagement() {
 
         if (deleteKeysError) {
             console.error('Error deleting API keys:', deleteKeysError);
+            toast({
+                title: "Error",
+                description: "Failed to delete API keys. Please try again.",
+                duration: 2000,
+            });
             return;
         }
 
         // Delete Clerk user
         try {
             await user.delete();
+            toast({
+                title: "Account Deleted",
+                description: "Your account has been successfully deleted.",
+                duration: 2000,
+            });
         } catch (error) {
             console.error('Error deleting Clerk user:', error);
+            toast({
+                title: "Error",
+                description: "Failed to delete your account. Please try again.",
+                duration: 2000,
+            });
         }
     };
 
@@ -97,9 +166,24 @@ export function ApiKeyManagement() {
         <div className="min-h-screen bg-black text-white p-4 md:p-6 lg:p-8">
             <Tabs defaultValue="api-key" className="space-y-4">
                 <TabsList className="grid w-full grid-cols-3 bg-white/10">
-                    <TabsTrigger value="api-key">API Key</TabsTrigger>
-                    <TabsTrigger value="subscription">Subscription</TabsTrigger>
-                    <TabsTrigger value="account">Account</TabsTrigger>
+                    <TabsTrigger
+                        value="api-key"
+                        className="text-white data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-400"
+                    >
+                        API Key
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="subscription"
+                        className="text-white data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-400"
+                    >
+                        Subscription
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="account"
+                        className="text-white data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-400"
+                    >
+                        Account
+                    </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="api-key">
@@ -119,9 +203,9 @@ export function ApiKeyManagement() {
                                         className="bg-white/5 border-white/10 text-white"
                                     />
                                     <Button
-                                        onClick={() => navigator.clipboard.writeText(currentApiKey)}
+                                        onClick={() => copyToClipboard(currentApiKey)}
                                         variant="outline"
-                                        className="bg-transparent hover:bg-white/10 text-white border-white/20 hover:border-white/40"
+                                        className="bg-transparent hover:bg-white/10 text-white hover:text-white border-white/20 hover:border-white/40"
                                     >
                                         Copy
                                     </Button>
@@ -129,8 +213,19 @@ export function ApiKeyManagement() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button onClick={regenerateApiKey} className="bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300">
-                                Generate New API Key
+                            <Button
+                                onClick={regenerateApiKey}
+                                className="bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300"
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <>
+                                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                                        Generating...
+                                    </>
+                                ) : (
+                                    'Generate New API Key'
+                                )}
                             </Button>
                         </CardFooter>
                     </Card>

@@ -9,6 +9,7 @@ import { PlanSelection } from "./components/PlanSelection"
 import { LoadingSpinner } from "./components/LoadingSpinner"
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom"
 import { useEffect } from 'react';
+import { Toaster } from './components/ui/toaster';
 
 export default function App() {
   const { isSignedIn, isLoaded, user } = useUser();
@@ -55,6 +56,7 @@ export default function App() {
           </Routes>
         </main>
         <Footer />
+        <Toaster />
       </div>
     </div>
   )
