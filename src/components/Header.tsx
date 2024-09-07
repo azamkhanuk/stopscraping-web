@@ -1,10 +1,14 @@
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
-import { SignInButton, SignUpButton, SignOutButton, useUser } from "@clerk/clerk-react"
+import { SignOutButton, useUser } from "@clerk/clerk-react"
+import { useSignUp } from "@/hooks/use-sign-up"
+import { useCustomSignIn } from "@/hooks/use-sign-in"
 
 export function Header() {
     const { isSignedIn, user } = useUser();
+    const handleSignUpOrSignIn = useSignUp();
+    const handleSignIn = useCustomSignIn();
 
     return (
         <header className="container mx-auto px-4 py-6 flex justify-between items-center">
@@ -43,16 +47,19 @@ export function Header() {
                                 </>
                             ) : (
                                 <>
-                                    <SignInButton mode="modal">
-                                        <Button variant="outline" className="w-full bg-transparent hover:bg-white/10 text-white border-white/20 hover:border-white/40 transition-colors duration-300">
-                                            Log In
-                                        </Button>
-                                    </SignInButton>
-                                    <SignUpButton mode="modal">
-                                        <Button className="w-full bg-white text-black hover:bg-white/90 transition-colors duration-300">
-                                            Sign Up
-                                        </Button>
-                                    </SignUpButton>
+                                    <Button
+                                        variant="outline"
+                                        className="bg-transparent hover:bg-white/10 text-white hover:text-white border-white/20 hover:border-white/40 transition-all duration-300"
+                                        onClick={handleSignIn}
+                                    >
+                                        Log In
+                                    </Button>
+                                    <Button
+                                        className="bg-white text-black hover:bg-white/90 transition-all duration-300"
+                                        onClick={handleSignUpOrSignIn}
+                                    >
+                                        Sign Up
+                                    </Button>
                                 </>
                             )}
                         </div>
@@ -78,14 +85,19 @@ export function Header() {
                     </>
                 ) : (
                     <>
-                        <SignInButton mode="modal">
-                            <Button variant="outline" className="bg-transparent hover:bg-white/10 text-white hover:text-white border-white/20 hover:border-white/40 transition-all duration-300">
-                                Log In
-                            </Button>
-                        </SignInButton>
-                        <SignUpButton mode="modal">
-                            <Button className="bg-white text-black hover:bg-white/90 transition-all duration-300">Sign Up</Button>
-                        </SignUpButton>
+                        <Button
+                            variant="outline"
+                            className="bg-transparent hover:bg-white/10 text-white hover:text-white border-white/20 hover:border-white/40 transition-all duration-300"
+                            onClick={handleSignIn}
+                        >
+                            Log In
+                        </Button>
+                        <Button
+                            className="bg-white text-black hover:bg-white/90 transition-all duration-300"
+                            onClick={handleSignUpOrSignIn}
+                        >
+                            Sign Up
+                        </Button>
                     </>
                 )}
             </div>
