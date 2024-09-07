@@ -16,7 +16,10 @@ export function useCustomSignIn() {
             }
         } else {
             try {
-                await clerk.openSignIn();
+                await clerk.openSignIn({
+                    redirectUrl: '/api-keys',
+                    afterSignInUrl: '/api-keys',
+                });
             } catch (error) {
                 console.error('Error during sign-in attempt:', error);
             }

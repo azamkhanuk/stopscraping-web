@@ -26,7 +26,10 @@ export function useSignUp() {
             }
         } else {
             try {
-                await clerk.openSignUp();
+                await clerk.openSignUp({
+                    redirectUrl: '/select-plan',
+                    afterSignUpUrl: '/select-plan',
+                });
             } catch (error) {
                 console.error('Error during sign-up attempt:', error);
             }
