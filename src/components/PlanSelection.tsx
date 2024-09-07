@@ -37,7 +37,7 @@ export function PlanSelection() {
                 });
 
             if (error) {
-                console.error('Error updating plan:', error);
+                console.error('Error creating/updating API key:', error);
                 // Handle error (e.g., show error message to user)
             } else {
                 // Redirect to API Key Management page

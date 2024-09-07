@@ -7,10 +7,23 @@ import { FeatureGrid } from "./components/FeatureGrid"
 import { PricingPlans } from "./components/PricingPlans"
 import { PlanSelection } from "./components/PlanSelection"
 import { LoadingSpinner } from "./components/LoadingSpinner"
-import { Navigate, Route, Routes } from "react-router-dom"
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom"
+import { useEffect } from 'react';
 
 export default function App() {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded, user } = useUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSignedIn && user) {
+      const pricingPlan = user.unsafeMetadata?.pricingPlan;
+      if (!pricingPlan) {
+        navigate('/select-plan');
+      } else {
+        navigate('/api-keys');
+      }
+    }
+  }, [isSignedIn, user, navigate]);
 
   if (!isLoaded) {
     return <LoadingSpinner />;

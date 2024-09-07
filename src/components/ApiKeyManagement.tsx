@@ -2,17 +2,11 @@ import { useState, useEffect } from 'react';
 import { useUser } from "@clerk/clerk-react";
 import { supabase } from '../lib/supabase';
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import { AlertTriangle } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { LoadingSpinner } from './LoadingSpinner';
 
 interface ApiKey {
@@ -53,66 +47,20 @@ export function ApiKeyManagement() {
         setLoading(false);
     };
 
-    const generateApiKey = async (tier: string) => {
-        if (!user?.id) return;
+    const regenerateApiKey = async () => {
+        if (!user?.id || apiKeys.length === 0) return;
 
-        const newApiKey = crypto.randomUUID();
-        const { data, error } = await supabase
-            .from('api_keys')
-            .upsert({
-                api_key: newApiKey,
-                tier,
-                user_id: user.id
-            }, {
-                onConflict: 'user_id,tier',
-                update: { api_key: newApiKey }
-            })
-            .select();
-
-        if (error) {
-            console.error('Error generating API key:', error);
-        } else {
-            setApiKeys(prevKeys => {
-                const index = prevKeys.findIndex(key => key.user_id === user?.id && key.tier === tier);
-                if (index !== -1) {
-                    // Update existing key
-                    const updatedKeys = [...prevKeys];
-                    updatedKeys[index] = data[0];
-                    return updatedKeys;
-                } else {
-                    // Add new key
-                    return [...prevKeys, data[0]];
-                }
-            });
-        }
-    };
-
-    const regenerateApiKey = async (id: string) => {
         const newApiKey = crypto.randomUUID();
         const { data, error } = await supabase
             .from('api_keys')
             .update({ api_key: newApiKey })
-            .eq('id', id)
+            .eq('id', apiKeys[0].id)
             .select();
 
         if (error) {
             console.error('Error regenerating API key:', error);
         } else {
-            setApiKeys(apiKeys.map(key => key.id === id ? data[0] : key));
-        }
-    };
-
-    const toggleApiKeyStatus = async (id: string, currentStatus: boolean) => {
-        const { data, error } = await supabase
-            .from('api_keys')
-            .update({ is_active: !currentStatus })
-            .eq('id', id)
-            .select();
-
-        if (error) {
-            console.error('Error toggling API key status:', error);
-        } else {
-            setApiKeys(apiKeys.map(key => key.id === id ? data[0] : key));
+            setApiKeys([data[0]]);
         }
     };
 
@@ -138,90 +86,100 @@ export function ApiKeyManagement() {
         }
     };
 
-    const handleDeleteAccount = async () => {
-        setIsDeleteDialogOpen(false);
-        await deleteAccount();
-    };
-
-    const userTier = typeof user?.unsafeMetadata?.pricingPlan === 'string'
-        ? user.unsafeMetadata.pricingPlan
-        : "free";
-
     if (loading) {
         return <LoadingSpinner />;
     }
 
+    const currentApiKey = apiKeys.length > 0 ? apiKeys[0].api_key : 'No API key found';
+    const subscriptionTier = apiKeys.length > 0 ? apiKeys[0].tier : 'Free';
+
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h2 className="text-3xl font-bold mb-6">API Key Management</h2>
-            <p className="text-xl mb-6">Current Plan: <span className="capitalize font-semibold">{userTier}</span></p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {['free', 'basic', 'pro'].map((tier) => (
-                    <Card key={tier} className="bg-white/10 backdrop-blur-sm border-white/20">
+        <div className="min-h-screen bg-black text-white p-4 md:p-6 lg:p-8">
+            <Tabs defaultValue="api-key" className="space-y-4">
+                <TabsList className="grid w-full grid-cols-3 bg-white/10">
+                    <TabsTrigger value="api-key">API Key</TabsTrigger>
+                    <TabsTrigger value="subscription">Subscription</TabsTrigger>
+                    <TabsTrigger value="account">Account</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="api-key">
+                    <Card className="bg-white/5 backdrop-blur-sm border-white/10">
                         <CardHeader>
-                            <CardTitle className="capitalize">{tier} Tier</CardTitle>
+                            <CardTitle className="text-white">API Key Management</CardTitle>
+                            <CardDescription className="text-gray-400">View and manage your API key</CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            {apiKeys.filter(key => key.tier === tier).map((key) => (
-                                <div key={key.id} className="mb-4">
-                                    <p className="text-sm mb-2">API Key: {key.api_key}</p>
-                                    <p className="text-sm mb-2">Status: {key.is_active ? 'Active' : 'Inactive'}</p>
-                                    <div className="flex space-x-2">
-                                        <Button onClick={() => regenerateApiKey(key.id)} size="sm">
-                                            Regenerate
-                                        </Button>
-                                        <Button onClick={() => toggleApiKeyStatus(key.id, key.is_active)} size="sm">
-                                            {key.is_active ? 'Deactivate' : 'Activate'}
-                                        </Button>
-                                    </div>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-1">
+                                <Label htmlFor="apiKey" className="text-white">Current API Key</Label>
+                                <div className="flex items-center space-x-2">
+                                    <Input
+                                        id="apiKey"
+                                        value={currentApiKey}
+                                        readOnly
+                                        className="bg-white/5 border-white/10 text-white"
+                                    />
+                                    <Button
+                                        onClick={() => navigator.clipboard.writeText(currentApiKey)}
+                                        variant="outline"
+                                        className="bg-transparent hover:bg-white/10 text-white border-white/20 hover:border-white/40"
+                                    >
+                                        Copy
+                                    </Button>
                                 </div>
-                            ))}
+                            </div>
                         </CardContent>
                         <CardFooter>
-                            <Button onClick={() => generateApiKey(tier)} className="w-full">
-                                Generate New Key
+                            <Button onClick={regenerateApiKey} className="bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300">
+                                Generate New API Key
                             </Button>
                         </CardFooter>
                     </Card>
-                ))}
-            </div>
-            <div className="mt-12 text-center">
-                <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button variant="destructive">
-                            Delete Account
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
-                                <AlertTriangle className="h-5 w-5 text-red-500" />
-                                Confirm Account Deletion
-                            </DialogTitle>
-                            <DialogDescription>
-                                This action cannot be undone. This will permanently delete your
-                                account and remove your data from our servers.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter className="sm:justify-start">
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                onClick={handleDeleteAccount}
-                            >
-                                Yes, delete my account
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setIsDeleteDialogOpen(false)}
-                            >
-                                Cancel
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            </div>
+                </TabsContent>
+
+                <TabsContent value="subscription">
+                    <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+                        <CardHeader>
+                            <CardTitle className="text-white">Subscription Management</CardTitle>
+                            <CardDescription className="text-gray-400">Manage your subscription and billing details</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-1">
+                                <Label className="text-white">Current Plan</Label>
+                                <p className="text-lg font-semibold text-purple-300">{subscriptionTier}</p>
+                            </div>
+                            {/* Add more subscription management content here */}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="account">
+                    <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+                        <CardHeader>
+                            <CardTitle className="text-white">Account Settings</CardTitle>
+                            <CardDescription className="text-gray-400">Manage your account</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="destructive">Delete Account</Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent className="bg-gray-900 border-gray-800 text-white">
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle className="text-white">Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription className="text-gray-400">
+                                            This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel className="bg-transparent hover:bg-white/10 text-white border-white/20 hover:border-white/40">Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={deleteAccount} className="bg-red-600 hover:bg-red-700 text-white">Delete Account</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }
