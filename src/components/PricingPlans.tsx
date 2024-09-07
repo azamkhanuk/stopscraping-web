@@ -12,7 +12,7 @@ const pricingTiers = [
         ],
         cta: "Get Started",
         disabled: false,
-        plan: "free"
+        plan: "Free"
     },
     {
         title: "Basic Tier",
@@ -25,7 +25,7 @@ const pricingTiers = [
         ],
         cta: "Subscribe Now",
         disabled: false,
-        plan: "basic"
+        plan: "Basic"
     },
     {
         title: "Pro Tier",
@@ -39,7 +39,7 @@ const pricingTiers = [
         ],
         cta: "Coming Soon",
         disabled: true,
-        plan: "pro"
+        plan: "Pro"
     },
 ]
 
