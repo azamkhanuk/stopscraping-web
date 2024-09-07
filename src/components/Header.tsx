@@ -4,15 +4,37 @@ import { Menu } from "lucide-react"
 import { SignOutButton, useUser } from "@clerk/clerk-react"
 import { useSignUp } from "@/hooks/use-sign-up"
 import { useCustomSignIn } from "@/hooks/use-sign-in"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 
 export function Header() {
     const { isSignedIn, user } = useUser();
     const handleSignUpOrSignIn = useSignUp();
     const handleSignIn = useCustomSignIn();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const hasPlan = user?.unsafeMetadata && 'pricingPlan' in user.unsafeMetadata;
+
+    const handleLogoClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        navigate('/');
+    };
+
+    const isActive = (path: string) => location.pathname === path;
+
+    const getLinkStyle = (path: string) => {
+        return isActive(path)
+            ? "bg-purple-600 text-white hover:bg-purple-700"
+            : "bg-transparent text-white border border-white hover:bg-white hover:text-black";
+    };
+
+    const inactiveStyle = "bg-transparent text-white border border-white hover:bg-white hover:text-black";
 
     return (
         <header className="container mx-auto px-4 py-6 flex justify-between items-center">
-            <h1 className="text-2xl font-bold">stopscraping.me</h1>
+            <a href="/" onClick={handleLogoClick} className="text-2xl font-bold hover:text-purple-300 transition-colors duration-300">
+                stopscraping.me
+            </a>
             <div className="md:hidden">
                 <Sheet>
                     <SheetTrigger asChild>
@@ -34,18 +56,19 @@ export function Header() {
                             </SheetClose>
                         </SheetHeader>
                         <div className="mt-6 flex flex-col gap-4">
-                            {isSignedIn ? (
-                                <>
-                                    <Button variant="outline" className="w-full bg-transparent hover:bg-white/10 text-white border-white/20 hover:border-white/40 transition-colors duration-300">
-                                        {user.firstName || 'Account'}
+                            <Link to="/docs">
+                                <Button className={`w-full ${getLinkStyle('/docs')} transition-colors duration-300`}>
+                                    Docs
+                                </Button>
+                            </Link>
+                            {isSignedIn && hasPlan && (
+                                <Link to="/api-keys">
+                                    <Button className={`w-full ${getLinkStyle('/api-keys')} transition-colors duration-300`}>
+                                        API Keys
                                     </Button>
-                                    <SignOutButton>
-                                        <Button className="w-full bg-white text-black hover:bg-white/90 transition-colors duration-300">
-                                            Sign Out
-                                        </Button>
-                                    </SignOutButton>
-                                </>
-                            ) : (
+                                </Link>
+                            )}
+                            {!isSignedIn && (
                                 <>
                                     <Button
                                         variant="outline"
@@ -64,25 +87,40 @@ export function Header() {
                             )}
                         </div>
                         <SheetFooter className="absolute bottom-4 left-4 right-4">
-                            <SheetClose asChild>
-                                <Button variant="ghost" className="w-full text-gray-400 hover:text-white hover:bg-white/10">
-                                    Close
-                                </Button>
-                            </SheetClose>
+                            {isSignedIn ? (
+                                <SignOutButton>
+                                    <Button className={`w-full ${inactiveStyle} transition-colors duration-300`}>
+                                        Sign Out
+                                    </Button>
+                                </SignOutButton>
+                            ) : (
+                                <SheetClose asChild>
+                                    <Button variant="ghost" className="w-full text-gray-400 hover:text-white hover:bg-white/10">
+                                        Close
+                                    </Button>
+                                </SheetClose>
+                            )}
                         </SheetFooter>
                     </SheetContent>
                 </Sheet>
             </div>
             <div className="hidden md:flex space-x-4">
-                {isSignedIn ? (
-                    <>
-                        <Button variant="outline" className="bg-transparent hover:bg-white/10 text-white border-white/20 hover:border-white/40 transition-all duration-300">
-                            {user.firstName || 'Account'}
+                <Link to="/docs">
+                    <Button className={`${getLinkStyle('/docs')} transition-colors duration-300`}>
+                        Docs
+                    </Button>
+                </Link>
+                {isSignedIn && hasPlan && (
+                    <Link to="/api-keys">
+                        <Button className={`${getLinkStyle('/api-keys')} transition-colors duration-300`}>
+                            API Keys
                         </Button>
-                        <SignOutButton>
-                            <Button className="bg-white text-black hover:bg-white/90 transition-all duration-300">Sign Out</Button>
-                        </SignOutButton>
-                    </>
+                    </Link>
+                )}
+                {isSignedIn ? (
+                    <SignOutButton>
+                        <Button className={`${inactiveStyle} transition-all duration-300`}>Sign Out</Button>
+                    </SignOutButton>
                 ) : (
                     <>
                         <Button

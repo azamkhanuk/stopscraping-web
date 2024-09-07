@@ -7,24 +7,12 @@ import { FeatureGrid } from "./components/FeatureGrid"
 import { PricingPlans } from "./components/PricingPlans"
 import { PlanSelection } from "./components/PlanSelection"
 import { LoadingSpinner } from "./components/LoadingSpinner"
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom"
-import { useEffect } from 'react';
+import { Docs } from "./components/Docs"
+import { Navigate, Route, Routes } from "react-router-dom"
 import { Toaster } from './components/ui/toaster';
 
 export default function App() {
-  const { isSignedIn, isLoaded, user } = useUser();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isSignedIn && user) {
-      const pricingPlan = user.unsafeMetadata?.pricingPlan;
-      if (!pricingPlan) {
-        navigate('/select-plan');
-      } else {
-        navigate('/api-keys');
-      }
-    }
-  }, [isSignedIn, user, navigate]);
+  const { isSignedIn, isLoaded } = useUser();
 
   if (!isLoaded) {
     return <LoadingSpinner />;
@@ -39,14 +27,13 @@ export default function App() {
         <main className="container mx-auto px-4 py-8 flex-grow flex flex-col justify-center">
           <Routes>
             <Route path="/" element={
-              isSignedIn ? <Navigate to="/select-plan" /> : (
-                <>
-                  <Hero />
-                  <FeatureGrid />
-                  <PricingPlans />
-                </>
-              )
+              <>
+                <Hero />
+                <FeatureGrid />
+                <PricingPlans />
+              </>
             } />
+            <Route path="/docs" element={<Docs />} />
             <Route path="/select-plan" element={
               isSignedIn ? <PlanSelection /> : <Navigate to="/" />
             } />

@@ -162,6 +162,7 @@ export function ApiKeyManagement() {
 
     return (
         <div className="min-h-screen bg-black text-white p-4 md:p-6 lg:p-8">
+            <h1 className="text-3xl font-bold mb-6">Welcome, {user?.firstName || 'User'}</h1>
             <Tabs defaultValue="api-key" className="space-y-4">
                 <TabsList className="grid w-full grid-cols-3 bg-white/10">
                     <TabsTrigger
