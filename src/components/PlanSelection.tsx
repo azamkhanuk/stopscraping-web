@@ -12,21 +12,25 @@ export function PlanSelection() {
     const [isProcessing, setIsProcessing] = useState(false);
 
     const handlePlanSelection = async (plan: string) => {
-        if (!user?.id || isProcessing) return;
+        console.log('handlePlanSelection called with plan:', plan);
+        if (!user?.id || isProcessing) {
+            console.log('User ID or isProcessing check failed:', { userId: user?.id, isProcessing });
+            return;
+        }
 
         setIsProcessing(true);
 
         try {
-            // Update user metadata in Clerk
+            console.log('Updating user metadata in Clerk');
             await user.update({
                 unsafeMetadata: { pricingPlan: plan },
             });
 
-            // Generate a new API key
+            console.log('Generating new API key');
             const newApiKey = crypto.randomUUID();
 
-            // Create or update entry in Supabase
-            const { error } = await supabase
+            console.log('Making Supabase upsert request');
+            const { data, error } = await supabase
                 .from('api_keys')
                 .upsert({
                     user_id: user.id,
@@ -34,18 +38,19 @@ export function PlanSelection() {
                     api_key: newApiKey
                 }, {
                     onConflict: 'user_id,tier'
-                });
+                })
+                .select();
 
             if (error) {
                 console.error('Error creating/updating API key:', error);
-                // Handle error (e.g., show error message to user)
+                alert('An error occurred while updating your plan. Please try again.');
             } else {
-                // Redirect to API Key Management page
+                console.log('API key created/updated:', data);
                 navigate("/api-keys");
             }
         } catch (error) {
             console.error('Error during plan selection:', error);
-            // Handle error (e.g., show error message to user)
+            alert('An unexpected error occurred. Please try again.');
         } finally {
             setIsProcessing(false);
         }
