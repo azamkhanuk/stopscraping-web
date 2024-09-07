@@ -71,14 +71,13 @@ export function Header() {
                             {!isSignedIn && (
                                 <>
                                     <Button
-                                        variant="outline"
-                                        className="bg-transparent hover:bg-white/10 text-white hover:text-white border-white/20 hover:border-white/40 transition-all duration-300"
+                                        className={`w-full ${getLinkStyle('')} transition-colors duration-300`}
                                         onClick={handleSignIn}
                                     >
                                         Log In
                                     </Button>
                                     <Button
-                                        className="bg-white text-black hover:bg-white/90 transition-all duration-300"
+                                        className="w-full bg-white text-black hover:bg-white/90 transition-all duration-300"
                                         onClick={handleSignUpOrSignIn}
                                     >
                                         Sign Up
@@ -124,8 +123,7 @@ export function Header() {
                 ) : (
                     <>
                         <Button
-                            variant="outline"
-                            className="bg-transparent hover:bg-white/10 text-white hover:text-white border-white/20 hover:border-white/40 transition-all duration-300"
+                            className={`${getLinkStyle('')} transition-colors duration-300`}
                             onClick={handleSignIn}
                         >
                             Log In
