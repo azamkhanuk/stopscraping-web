@@ -8,9 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { LoadingSpinner } from './LoadingSpinner';
-import { ToastAction } from "@/components/ui/toast";
-import { RefreshCw, Check } from "lucide-react";
-import { useToast, type ToastActionElement } from '@/hooks/use-toast';
+import { RefreshCw } from "lucide-react";
+import { useToast } from '@/hooks/use-toast';
 
 interface ApiKey {
     id: string;
@@ -104,7 +103,6 @@ export function ApiKeyManagement() {
             toast({
                 title: "Success",
                 description: "New API key generated successfully!",
-                icon: <Check className="h-4 w-4 text-green-500" />,
                 duration: 2000,
             });
         } else {

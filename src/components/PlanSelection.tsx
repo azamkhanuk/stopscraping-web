@@ -6,6 +6,9 @@ import { supabase } from '../lib/supabase';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
+// Add this type definition
+type ValidTier = 'Free' | 'Basic' | 'Pro';
+
 export function PlanSelection() {
     const { user } = useUser();
     const navigate = useNavigate();
@@ -29,12 +32,15 @@ export function PlanSelection() {
             console.log('Generating new API key');
             const newApiKey = crypto.randomUUID();
 
+            // Validate the plan before using it
+            const validTier: ValidTier = validateTier(plan);
+
             console.log('Making Supabase upsert request');
             const { data, error } = await supabase
                 .from('api_keys')
                 .upsert({
                     user_id: user.id,
-                    tier: plan,
+                    tier: validTier,
                     api_key: newApiKey
                 }, {
                     onConflict: 'user_id,tier'
@@ -54,6 +60,16 @@ export function PlanSelection() {
         } finally {
             setIsProcessing(false);
         }
+    };
+
+    // Add this function to validate the tier
+    const validateTier = (plan: string): ValidTier => {
+        const validTiers: ValidTier[] = ['Free', 'Basic', 'Pro'];
+        if (validTiers.includes(plan as ValidTier)) {
+            return plan as ValidTier;
+        }
+        console.error(`Invalid tier: ${plan}`);
+        return 'Free'; // Default to 'Free' if an invalid tier is provided
     };
 
     return (
