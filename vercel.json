@@ -23,6 +23,14 @@
             "dest": "/assets/$1"
         },
         {
+            "src": "^/favicon.svg",
+            "dest": "/favicon.svg"
+        },
+        {
+            "src": "^/og-image.jpg",
+            "dest": "/og-image.jpg"
+        },
+        {
             "src": ".*",
             "dest": "/index.html"
         }
