@@ -85,12 +85,13 @@ export function ApiKeyManagement() {
         });
 
         const newApiKey = crypto.randomUUID();
+        const currentTier = apiKeys[0].tier;
 
         const { data, error } = await supabase
             .from('api_keys')
             .update({ api_key: newApiKey })
             .eq('user_id', user.id)
-            .eq('tier', apiKeys[0].tier)
+            .eq('tier', currentTier)
             .select();
 
         if (error) {
