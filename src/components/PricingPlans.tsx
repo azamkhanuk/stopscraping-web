@@ -10,7 +10,7 @@ import { supabase } from '../lib/supabase';
 const pricingTiers = [
     {
         title: "Free Tier",
-        price: "$0",
+        price: "0",
         features: [
             "Static list of OpenAI IPs, updated weekly",
             "Limited API calls (10/day)",
@@ -21,7 +21,7 @@ const pricingTiers = [
     },
     {
         title: "Basic Tier",
-        price: "$5/month",
+        price: "£5/month",
         features: [
             "Daily IP updates",
             "Increased API call limit (100/day)",
@@ -34,7 +34,7 @@ const pricingTiers = [
     },
     {
         title: "Pro Tier",
-        price: "$15/month",
+        price: "£15/month",
         features: [
             "Everything in Basic",
             "Real-time IP updates",
