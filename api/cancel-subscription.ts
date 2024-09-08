@@ -19,14 +19,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(400).json({ error: 'Subscription ID is required' });
             }
 
+            // Fetch the Stripe Customer ID from user metadata
+            const user = await fetch(`https://api.clerk.dev/v1/users/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+                },
+            }).then(res => res.json());
+
+            const customerId = user.unsafe_metadata.stripeCustomerId;
+
+            if (!customerId) {
+                return res.status(404).json({ error: 'No Stripe customer found for this user' });
+            }
+
             // Verify that the subscription belongs to the user
             const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-            const customers = await stripe.customers.search({
-                query: `metadata['clerkUserId']:'${userId}'`,
-                limit: 1
-            });
 
-            if (customers.data.length === 0 || customers.data[0].id !== subscription.customer) {
+            if (subscription.customer !== customerId) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
 

@@ -29,12 +29,15 @@ export function SuccessPage() {
                     body: JSON.stringify({ sessionId }),
                 });
 
-                const { success, plan } = await response.json();
+                const { success, plan, customerId } = await response.json();
 
-                if (success && plan === 'Basic') {
-                    // Update user metadata
+                if (success && plan === 'Basic' && customerId) {
+                    // Update user metadata with the Stripe Customer ID
                     await user.update({
-                        unsafeMetadata: { pricingPlan: 'Basic' },
+                        unsafeMetadata: {
+                            pricingPlan: 'Basic',
+                            stripeCustomerId: customerId
+                        },
                     });
 
                     // Generate new API key

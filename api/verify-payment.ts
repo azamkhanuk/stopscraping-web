@@ -10,12 +10,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         try {
             const { sessionId } = req.body;
 
-            const session = await stripe.checkout.sessions.retrieve(sessionId);
+            const session = await stripe.checkout.sessions.retrieve(sessionId, {
+                expand: ['customer']
+            });
 
             if (session.payment_status === 'paid') {
                 const basicPlanAmount = 500; // $5.00
                 if (session.amount_total === basicPlanAmount) {
-                    res.status(200).json({ success: true, plan: 'Basic' });
+                    res.status(200).json({
+                        success: true,
+                        plan: 'Basic',
+                        customerId: session.customer.id // Add this line
+                    });
                 } else {
                     throw new Error('Unknown price amount');
                 }

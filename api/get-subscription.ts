@@ -14,17 +14,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
 
-            // Fetch the Stripe customer ID using the Clerk user ID
-            const customers = await stripe.customers.search({
-                query: `metadata['clerkUserId']:'${userId}'`,
-                limit: 1
-            });
+            // Fetch the Stripe Customer ID from user metadata
+            const user = await fetch(`https://api.clerk.dev/v1/users/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+                },
+            }).then(res => res.json());
 
-            if (customers.data.length === 0) {
+            const customerId = user.unsafe_metadata.stripeCustomerId;
+
+            if (!customerId) {
                 return res.status(404).json({ error: 'No Stripe customer found for this user' });
             }
-
-            const customerId = customers.data[0].id;
 
             const subscriptions = await stripe.subscriptions.list({
                 customer: customerId,
