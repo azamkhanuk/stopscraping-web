@@ -17,11 +17,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             if (session.payment_status === 'paid') {
                 const basicPlanAmount = 500; // $5.00
                 if (session.amount_total === basicPlanAmount) {
-                    res.status(200).json({
-                        success: true,
-                        plan: 'Basic',
-                        customerId: session.customer.id // Add this line
-                    });
+                    // Check if customer exists and is of type Stripe.Customer
+                    if (session.customer && typeof session.customer !== 'string' && 'id' in session.customer) {
+                        res.status(200).json({
+                            success: true,
+                            plan: 'Basic',
+                            customerId: session.customer.id
+                        });
+                    } else {
+                        throw new Error('Invalid customer data');
+                    }
                 } else {
                     throw new Error('Unknown price amount');
                 }
