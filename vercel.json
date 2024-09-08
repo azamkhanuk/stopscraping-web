@@ -26,11 +26,5 @@
             "src": ".*",
             "dest": "/index.html"
         }
-    ],
-    "rewrites": [
-        {
-            "source": "/api/(.*)",
-            "destination": "/api/$1"
-        }
     ]
 }
