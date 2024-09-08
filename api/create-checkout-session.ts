@@ -13,18 +13,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         try {
             const { plan } = req.body;
 
-            if (!plan) {
-                throw new Error('No plan specified');
-            }
-
-            let priceId: string;
-            if (plan === 'Basic') {
-                priceId = process.env.STRIPE_BASIC_PRICE_ID!;
-            } else if (plan === 'Pro') {
-                priceId = process.env.STRIPE_PRO_PRICE_ID!;
-            } else {
+            if (plan !== 'Basic') {
                 throw new Error('Invalid plan selected');
             }
+
+            const priceId = process.env.STRIPE_BASIC_PRICE_ID!;
 
             console.log('Creating Stripe session with priceId:', priceId);
             const session = await stripe.checkout.sessions.create({

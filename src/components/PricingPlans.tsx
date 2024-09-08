@@ -5,6 +5,7 @@ import { useUser } from "@clerk/clerk-react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useStripe } from '@stripe/react-stripe-js';
+import { supabase } from '../lib/supabase';
 
 // Remove the PricingPlansProps type as we no longer need it
 
@@ -50,7 +51,7 @@ const pricingTiers = [
 ]
 
 export function PricingPlans() {  // Remove the onPlanSelect prop
-    const { isSignedIn } = useUser();
+    const { isSignedIn, user } = useUser();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const stripe = useStripe();
@@ -62,36 +63,65 @@ export function PricingPlans() {  // Remove the onPlanSelect prop
             return;
         }
 
-        if (!stripe) {
-            console.error('Stripe.js has not loaded yet.');
-            alert('An error occurred. Please try again.');
-            setIsLoading(false);
-            return;
-        }
-
         try {
-            console.log('Selecting plan:', plan);
-            const response = await fetch('/api/create-checkout-session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ plan }),
-            });
+            if (plan === 'Basic') {
+                if (!stripe) {
+                    console.error('Stripe.js has not loaded yet.');
+                    alert('An error occurred. Please try again.');
+                    return;
+                }
 
-            const session = await response.json();
-
-            if (session.sessionId) {
-                const result = await stripe.redirectToCheckout({
-                    sessionId: session.sessionId,
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ plan }),
                 });
 
-                if (result.error) {
-                    console.error('Error redirecting to Checkout:', result.error);
-                    alert('An error occurred. Please try again.');
+                const session = await response.json();
+
+                if (session.sessionId) {
+                    const result = await stripe.redirectToCheckout({
+                        sessionId: session.sessionId,
+                    });
+
+                    if (result.error) {
+                        console.error('Error redirecting to Checkout:', result.error);
+                        alert('An error occurred. Please try again.');
+                    }
+                } else {
+                    throw new Error('No sessionId in the session response');
+                }
+            } else if (plan === 'Free') {
+                // Update user metadata for Free plan
+                await user?.update({
+                    unsafeMetadata: { ...user.unsafeMetadata, pricingPlan: 'Free' },
+                });
+
+                // Generate new API key
+                const newApiKey = crypto.randomUUID();
+
+                // Insert new API key into Supabase
+                const { error } = await supabase
+                    .from('api_keys')
+                    .upsert({
+                        user_id: user?.id,
+                        tier: 'Free',
+                        api_key: newApiKey
+                    }, {
+                        onConflict: 'user_id,tier'
+                    });
+
+                if (error) {
+                    console.error('Error creating API key:', error);
+                    alert('An error occurred while creating your API key. Please try again.');
+                } else {
+                    navigate('/api-keys');
                 }
             } else {
-                throw new Error('No sessionId in the session response');
+                // Pro plan (not available yet)
+                alert('Pro plan is not available yet. Please check back later.');
             }
         } catch (error) {
             console.error('Error selecting plan:', error);

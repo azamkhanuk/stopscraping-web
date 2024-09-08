@@ -10,6 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { LoadingSpinner } from './LoadingSpinner';
 import { RefreshCw } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
+import { useStripe } from '@stripe/react-stripe-js';
 
 interface ApiKey {
     id: string;
@@ -26,6 +27,7 @@ export function ApiKeyManagement() {
     const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
     const [loading, setLoading] = useState(true);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const stripe = useStripe();
 
     useEffect(() => {
         if (user) {
@@ -153,6 +155,45 @@ export function ApiKeyManagement() {
         }
     };
 
+    const handleUpgrade = async () => {
+        if (!stripe) {
+            console.error('Stripe.js has not loaded yet.');
+            alert('An error occurred. Please try again.');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await fetch('/api/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ plan: 'Basic' }),
+            });
+
+            const session = await response.json();
+
+            if (session.sessionId) {
+                const result = await stripe.redirectToCheckout({
+                    sessionId: session.sessionId,
+                });
+
+                if (result.error) {
+                    console.error('Error redirecting to Checkout:', result.error);
+                    alert('An error occurred. Please try again.');
+                }
+            } else {
+                throw new Error('No sessionId in the session response');
+            }
+        } catch (error) {
+            console.error('Error upgrading plan:', error);
+            alert('An error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (loading) {
         return <LoadingSpinner />;
     }
@@ -239,9 +280,19 @@ export function ApiKeyManagement() {
                         <CardContent className="space-y-4">
                             <div className="space-y-1">
                                 <Label className="text-white">Current Plan</Label>
-                                <p className="text-lg font-semibold text-purple-300">{subscriptionTier}</p>
+                                <p className="text-lg font-semibold text-purple-300">
+                                    {(user?.unsafeMetadata?.pricingPlan as string) || 'Free'}
+                                </p>
                             </div>
-                            {/* Add more subscription management content here */}
+                            {user?.unsafeMetadata?.pricingPlan === 'Free' && (
+                                <Button
+                                    onClick={handleUpgrade}
+                                    className="bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Processing...' : 'Upgrade to Basic'}
+                                </Button>
+                            )}
                         </CardContent>
                     </Card>
                 </TabsContent>

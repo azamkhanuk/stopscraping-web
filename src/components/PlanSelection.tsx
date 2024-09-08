@@ -84,7 +84,7 @@ export function PlanSelection() {
                     Back to Home
                 </Button>
             </div>
-            <PricingPlans onPlanSelect={handlePlanSelection} />
+            <PricingPlans />
         </div>
     );
 }
