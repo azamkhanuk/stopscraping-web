@@ -40,19 +40,31 @@ export function SuccessPage() {
                     // Generate new API key
                     const newApiKey = crypto.randomUUID();
 
-                    // Update Supabase
-                    const { error } = await supabase
+                    // Check if user already has an API key
+                    const { data: existingKeys } = await supabase
                         .from('api_keys')
-                        .upsert({
-                            user_id: user.id,
-                            tier: 'Basic',
-                            api_key: newApiKey
-                        }, {
-                            onConflict: 'user_id,tier'
-                        });
+                        .select('*')
+                        .eq('user_id', user.id);
 
-                    if (error) {
-                        throw error;
+                    if (existingKeys && existingKeys.length > 0) {
+                        // Update existing key
+                        const { error } = await supabase
+                            .from('api_keys')
+                            .update({ tier: 'Basic', api_key: newApiKey })
+                            .eq('user_id', user.id);
+
+                        if (error) throw error;
+                    } else {
+                        // Insert new key
+                        const { error } = await supabase
+                            .from('api_keys')
+                            .insert({
+                                user_id: user.id,
+                                tier: 'Basic',
+                                api_key: newApiKey
+                            });
+
+                        if (error) throw error;
                     }
 
                     navigate("/api-keys");
