@@ -7,8 +7,6 @@ import { useNavigate } from "react-router-dom"
 import { useStripe } from '@stripe/react-stripe-js';
 import { supabase } from '../lib/supabase';
 
-// Remove the PricingPlansProps type as we no longer need it
-
 const pricingTiers = [
     {
         title: "Free Tier",
@@ -50,7 +48,7 @@ const pricingTiers = [
     },
 ]
 
-export function PricingPlans() {  // Remove the onPlanSelect prop
+export function PricingPlans() {
     const { isSignedIn, user } = useUser();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
