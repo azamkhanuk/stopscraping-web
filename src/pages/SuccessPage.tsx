@@ -31,10 +31,10 @@ export function SuccessPage() {
 
                 const { success, plan } = await response.json();
 
-                if (success) {
+                if (success && plan === 'Basic') {
                     // Update user metadata
                     await user.update({
-                        unsafeMetadata: { pricingPlan: plan },
+                        unsafeMetadata: { pricingPlan: 'Basic' },
                     });
 
                     // Generate new API key
@@ -45,7 +45,7 @@ export function SuccessPage() {
                         .from('api_keys')
                         .upsert({
                             user_id: user.id,
-                            tier: plan,
+                            tier: 'Basic',
                             api_key: newApiKey
                         }, {
                             onConflict: 'user_id,tier'
@@ -57,7 +57,7 @@ export function SuccessPage() {
 
                     navigate("/api-keys");
                 } else {
-                    throw new Error('Payment verification failed');
+                    throw new Error('Payment verification failed or invalid plan');
                 }
             } catch (error) {
                 console.error('Error processing payment:', error);
