@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Check, Wrench } from "lucide-react"
+import { useUser } from "@clerk/clerk-react"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 const pricingTiers = [
     {
@@ -43,7 +46,37 @@ const pricingTiers = [
     },
 ]
 
-export function PricingPlans({ onPlanSelect }: { onPlanSelect?: (plan: string) => void }) {
+export function PricingPlans() {
+    const { isSignedIn } = useUser();
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handlePlanSelection = async (plan: string) => {
+        setIsLoading(true);
+        if (!isSignedIn) {
+            navigate('/sign-up');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ plan }),
+            });
+
+            const session = await response.json();
+            window.location.href = session.url;
+        } catch (error) {
+            console.error('Error creating checkout session:', error);
+            alert('An error occurred. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <section className="mt-20 mb-12">
             <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text">Choose Your Plan</h2>
@@ -79,10 +112,10 @@ export function PricingPlans({ onPlanSelect }: { onPlanSelect?: (plan: string) =
                         <CardFooter className="flex justify-center pt-6">
                             <Button
                                 className={`w-full ${tier.disabled ? 'bg-gray-700 text-gray-400' : 'bg-purple-600 hover:bg-purple-700 text-white'} transition-all duration-300 py-6`}
-                                disabled={tier.disabled}
-                                onClick={() => onPlanSelect && onPlanSelect(tier.plan)}
+                                disabled={tier.disabled || isLoading}
+                                onClick={() => handlePlanSelection(tier.plan)}
                             >
-                                {tier.cta}
+                                {isLoading ? 'Processing...' : tier.cta}
                             </Button>
                         </CardFooter>
                     </Card>

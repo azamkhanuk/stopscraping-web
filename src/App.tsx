@@ -10,6 +10,7 @@ import { LoadingSpinner } from "./components/LoadingSpinner"
 import { Docs } from "./components/Docs"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Toaster } from './components/ui/toaster';
+import { SuccessPage } from "./pages/SuccessPage"
 
 export default function App() {
   const { isSignedIn, isLoaded } = useUser();
@@ -40,6 +41,7 @@ export default function App() {
             <Route path="/api-keys" element={
               isSignedIn ? <ApiKeyManagement /> : <Navigate to="/" />
             } />
+            <Route path="/success" element={<SuccessPage />} />
           </Routes>
         </main>
         <Footer />
