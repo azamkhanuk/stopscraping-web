@@ -13,6 +13,7 @@ import { Toaster } from './components/ui/toaster';
 import { SuccessPage } from "./pages/SuccessPage"
 import { Elements } from '@stripe/react-stripe-js';
 import { stripePromise } from './lib/stripe';
+import NotFound from "./pages/NotFound"
 
 export default function App() {
   const { isSignedIn, isLoaded } = useUser();
@@ -34,7 +35,7 @@ export default function App() {
                 <>
                   <Hero />
                   <FeatureGrid />
-                  <PricingPlans />  {/* Remove the onPlanSelect prop */}
+                  <PricingPlans />
                 </>
               } />
               <Route path="/docs" element={<Docs />} />
@@ -45,6 +46,7 @@ export default function App() {
                 isSignedIn ? <ApiKeyManagement /> : <Navigate to="/" />
               } />
               <Route path="/success" element={<SuccessPage />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <Footer />
