@@ -18,5 +18,9 @@
     "sourceMap": true,
     "inlineSourceMap": false,
     "inlineSources": false
-  }
+  },
+  "include": [
+    "src",
+    "api"
+  ]
 }

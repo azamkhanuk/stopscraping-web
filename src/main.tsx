@@ -6,6 +6,7 @@ import App from './App'
 import './index.css'
 import { dark } from '@clerk/themes'
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/react"
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       }}>
         <App />
         <Analytics />
+        <SpeedInsights />
       </ClerkProvider>
     </BrowserRouter>
   </React.StrictMode>,
