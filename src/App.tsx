@@ -11,9 +11,37 @@ import { Docs } from "./components/Docs"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Toaster } from './components/ui/toaster';
 import { SuccessPage } from "./pages/SuccessPage"
+import { useState } from 'react';
 
 export default function App() {
   const { isSignedIn, isLoaded } = useUser();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handlePlanSelection = async (plan: string) => {
+    if (!isSignedIn || isProcessing) {
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ plan }),
+      });
+
+      const session = await response.json();
+      window.location.href = session.url;
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   if (!isLoaded) {
     return <LoadingSpinner />;
@@ -31,7 +59,7 @@ export default function App() {
               <>
                 <Hero />
                 <FeatureGrid />
-                <PricingPlans />
+                <PricingPlans onPlanSelect={handlePlanSelection} />
               </>
             } />
             <Route path="/docs" element={<Docs />} />

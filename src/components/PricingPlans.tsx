@@ -5,6 +5,10 @@ import { useUser } from "@clerk/clerk-react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
+type PricingPlansProps = {
+    onPlanSelect: (plan: string) => Promise<void>;
+};
+
 const pricingTiers = [
     {
         title: "Free Tier",
@@ -46,7 +50,7 @@ const pricingTiers = [
     },
 ]
 
-export function PricingPlans() {
+export function PricingPlans({ onPlanSelect }: PricingPlansProps) {
     const { isSignedIn } = useUser();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -59,18 +63,9 @@ export function PricingPlans() {
         }
 
         try {
-            const response = await fetch('/api/create-checkout-session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ plan }),
-            });
-
-            const session = await response.json();
-            window.location.href = session.url;
+            await onPlanSelect(plan);
         } catch (error) {
-            console.error('Error creating checkout session:', error);
+            console.error('Error selecting plan:', error);
             alert('An error occurred. Please try again.');
         } finally {
             setIsLoading(false);
