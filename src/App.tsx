@@ -11,81 +11,46 @@ import { Docs } from "./components/Docs"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Toaster } from './components/ui/toaster';
 import { SuccessPage } from "./pages/SuccessPage"
-import { useState } from 'react';
+import { Elements } from '@stripe/react-stripe-js';
+import { stripePromise } from './lib/stripe';
 
 export default function App() {
   const { isSignedIn, isLoaded } = useUser();
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const handlePlanSelection = async (plan: string) => {
-    if (!isSignedIn || isProcessing) {
-      return;
-    }
-
-    setIsProcessing(true);
-
-    try {
-      console.log('Creating checkout session for plan:', plan);
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ plan }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const session = await response.json();
-      console.log('Received session:', session);
-
-      if (session.url) {
-        window.location.href = session.url;
-      } else {
-        throw new Error('No URL in the session response');
-      }
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      alert('An error occurred. Please try again.');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   if (!isLoaded) {
     return <LoadingSpinner />;
   }
 
   return (
-    <div className="min-h-screen bg-black text-white relative">
-      <div className="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none"></div>
-      <div className="relative z-10">
-        <Header />
+    <Elements stripe={stripePromise}>
+      <div className="min-h-screen bg-black text-white relative">
+        <div className="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none"></div>
+        <div className="relative z-10">
+          <Header />
 
-        <main className="container mx-auto px-4 py-8 flex-grow flex flex-col justify-center">
-          <Routes>
-            <Route path="/" element={
-              <>
-                <Hero />
-                <FeatureGrid />
-                <PricingPlans onPlanSelect={handlePlanSelection} />
-              </>
-            } />
-            <Route path="/docs" element={<Docs />} />
-            <Route path="/select-plan" element={
-              isSignedIn ? <PlanSelection /> : <Navigate to="/" />
-            } />
-            <Route path="/api-keys" element={
-              isSignedIn ? <ApiKeyManagement /> : <Navigate to="/" />
-            } />
-            <Route path="/success" element={<SuccessPage />} />
-          </Routes>
-        </main>
-        <Footer />
-        <Toaster />
+          <main className="container mx-auto px-4 py-8 flex-grow flex flex-col justify-center">
+            <Routes>
+              <Route path="/" element={
+                <>
+                  <Hero />
+                  <FeatureGrid />
+                  <PricingPlans />  {/* Remove the onPlanSelect prop */}
+                </>
+              } />
+              <Route path="/docs" element={<Docs />} />
+              <Route path="/select-plan" element={
+                isSignedIn ? <PlanSelection /> : <Navigate to="/" />
+              } />
+              <Route path="/api-keys" element={
+                isSignedIn ? <ApiKeyManagement /> : <Navigate to="/" />
+              } />
+              <Route path="/success" element={<SuccessPage />} />
+            </Routes>
+          </main>
+          <Footer />
+          <Toaster />
+        </div>
       </div>
-    </div>
+    </Elements>
   )
 }

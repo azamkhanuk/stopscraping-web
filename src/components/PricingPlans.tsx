@@ -4,10 +4,9 @@ import { Check, Wrench } from "lucide-react"
 import { useUser } from "@clerk/clerk-react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useStripe } from '@stripe/react-stripe-js';
 
-type PricingPlansProps = {
-    onPlanSelect: (plan: string) => Promise<void>;
-};
+// Remove the PricingPlansProps type as we no longer need it
 
 const pricingTiers = [
     {
@@ -50,10 +49,11 @@ const pricingTiers = [
     },
 ]
 
-export function PricingPlans({ onPlanSelect }: PricingPlansProps) {
+export function PricingPlans() {  // Remove the onPlanSelect prop
     const { isSignedIn } = useUser();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const stripe = useStripe();
 
     const handlePlanSelection = async (plan: string) => {
         setIsLoading(true);
@@ -62,9 +62,37 @@ export function PricingPlans({ onPlanSelect }: PricingPlansProps) {
             return;
         }
 
+        if (!stripe) {
+            console.error('Stripe.js has not loaded yet.');
+            alert('An error occurred. Please try again.');
+            setIsLoading(false);
+            return;
+        }
+
         try {
             console.log('Selecting plan:', plan);
-            await onPlanSelect(plan);
+            const response = await fetch('/api/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ plan }),
+            });
+
+            const session = await response.json();
+
+            if (session.sessionId) {
+                const result = await stripe.redirectToCheckout({
+                    sessionId: session.sessionId,
+                });
+
+                if (result.error) {
+                    console.error('Error redirecting to Checkout:', result.error);
+                    alert('An error occurred. Please try again.');
+                }
+            } else {
+                throw new Error('No sessionId in the session response');
+            }
         } catch (error) {
             console.error('Error selecting plan:', error);
             alert('An error occurred. Please try again.');

@@ -35,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             });
 
             console.log('Created Stripe session:', session);
-            res.status(200).json({ url: session.url });
+            res.status(200).json({ sessionId: session.id });
         } catch (err: any) {
             console.error('Error in create-checkout-session:', err);
             res.status(500).json({ error: err.message });
