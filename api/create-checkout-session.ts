@@ -6,10 +6,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+    console.log('Received request:', req.method, req.url);
+    console.log('Request body:', req.body);
+
     if (req.method === 'POST') {
         try {
-            console.log('Received request body:', req.body);
             const { plan } = req.body;
+
+            if (!plan) {
+                throw new Error('No plan specified');
+            }
 
             let priceId: string;
             if (plan === 'Basic') {
@@ -41,7 +47,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             res.status(500).json({ error: err.message });
         }
     } else {
+        console.log('Method not allowed:', req.method);
         res.setHeader('Allow', 'POST');
-        res.status(405).end('Method Not Allowed');
+        res.status(405).json({ error: 'Method Not Allowed' });
     }
 }
