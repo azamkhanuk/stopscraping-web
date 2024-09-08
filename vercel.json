@@ -26,5 +26,11 @@
             "src": ".*",
             "dest": "/index.html"
         }
+    ],
+    "crons": [
+        {
+            "path": "/api/check-subscription-status",
+            "schedule": "0 0 * * *"
+        }
     ]
 }

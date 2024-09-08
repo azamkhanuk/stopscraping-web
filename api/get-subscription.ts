@@ -16,8 +16,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             const subscriptions = await stripe.subscriptions.list({
                 customer: stripeCustomerId,
-                limit: 1,
-                status: 'active',
+                status: 'all',
                 expand: ['data.default_payment_method', 'data.items.data.price'],
             });
 
@@ -26,6 +25,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 res.status(200).json({
                     subscription: {
                         id: subscription.id,
+                        status: subscription.status,
                         current_period_end: subscription.current_period_end,
                         cancel_at_period_end: subscription.cancel_at_period_end,
                         price: {

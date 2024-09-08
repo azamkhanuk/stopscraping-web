@@ -24,6 +24,7 @@ interface ApiKey {
 
 interface StripeSubscription {
     id: string;
+    status: string;
     current_period_end: number;
     cancel_at_period_end: boolean;
     price: {
@@ -231,6 +232,7 @@ export function ApiKeyManagement() {
             }
 
             const data = await response.json();
+            console.log('Subscription data:', data);
             setSubscription(data.subscription);
         } catch (error) {
             console.error('Error fetching subscription:', error);
@@ -372,8 +374,14 @@ export function ApiKeyManagement() {
                                     {(user?.unsafeMetadata?.pricingPlan as string) || 'Free'}
                                 </p>
                             </div>
-                            {subscription && (
+                            {subscription ? (
                                 <>
+                                    <div className="space-y-1">
+                                        <Label className="text-white">Subscription Status</Label>
+                                        <p className="text-lg font-semibold text-purple-300">
+                                            {subscription.status}
+                                        </p>
+                                    </div>
                                     <div className="space-y-1">
                                         <Label className="text-white">Subscription Price</Label>
                                         <p className="text-lg font-semibold text-purple-300">
@@ -381,21 +389,25 @@ export function ApiKeyManagement() {
                                         </p>
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-white">Monthly Billing Period</Label>
+                                        <Label className="text-white">Current Period Ends</Label>
                                         <p className="text-lg font-semibold text-purple-300">
                                             {format(new Date(subscription.current_period_end * 1000), 'MMMM d, yyyy')}
                                         </p>
                                     </div>
-                                    <Button
-                                        onClick={handleCancelSubscription}
-                                        className="bg-red-600 text-white hover:bg-red-700 transition-all duration-300"
-                                        disabled={subscription.cancel_at_period_end}
-                                    >
-                                        {subscription.cancel_at_period_end ? 'Cancellation Scheduled' : 'Cancel Subscription'}
-                                    </Button>
+                                    {subscription.status === 'active' && (
+                                        <Button
+                                            onClick={handleCancelSubscription}
+                                            className="bg-red-600 text-white hover:bg-red-700 transition-all duration-300"
+                                            disabled={subscription.cancel_at_period_end}
+                                        >
+                                            {subscription.cancel_at_period_end ? 'Cancellation Scheduled' : 'Cancel Subscription'}
+                                        </Button>
+                                    )}
                                 </>
+                            ) : (
+                                <p>No active subscription found.</p>
                             )}
-                            {user?.unsafeMetadata?.pricingPlan === 'Free' && (
+                            {(!subscription || subscription.status !== 'active') && (
                                 <Button
                                     onClick={handleUpgrade}
                                     className="bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300"
