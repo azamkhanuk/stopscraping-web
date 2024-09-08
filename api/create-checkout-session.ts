@@ -8,6 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'POST') {
         try {
+            console.log('Received request body:', req.body);
             const { plan } = req.body;
 
             let priceId: string;
@@ -19,6 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 throw new Error('Invalid plan selected');
             }
 
+            console.log('Creating Stripe session with priceId:', priceId);
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
                 line_items: [
@@ -32,8 +34,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 cancel_url: `${req.headers.origin}/`,
             });
 
+            console.log('Created Stripe session:', session);
             res.status(200).json({ url: session.url });
         } catch (err: any) {
+            console.error('Error in create-checkout-session:', err);
             res.status(500).json({ error: err.message });
         }
     } else {

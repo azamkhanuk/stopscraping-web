@@ -63,6 +63,7 @@ export function PricingPlans({ onPlanSelect }: PricingPlansProps) {
         }
 
         try {
+            console.log('Selecting plan:', plan);
             await onPlanSelect(plan);
         } catch (error) {
             console.error('Error selecting plan:', error);

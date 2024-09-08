@@ -25,6 +25,7 @@ export default function App() {
     setIsProcessing(true);
 
     try {
+      console.log('Creating checkout session for plan:', plan);
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -33,8 +34,18 @@ export default function App() {
         body: JSON.stringify({ plan }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const session = await response.json();
-      window.location.href = session.url;
+      console.log('Received session:', session);
+
+      if (session.url) {
+        window.location.href = session.url;
+      } else {
+        throw new Error('No URL in the session response');
+      }
     } catch (error) {
       console.error('Error creating checkout session:', error);
       alert('An error occurred. Please try again.');
