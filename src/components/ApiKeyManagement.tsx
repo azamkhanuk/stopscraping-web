@@ -381,7 +381,7 @@ export function ApiKeyManagement() {
                                         </p>
                                     </div>
                                     <div className="space-y-1">
-                                        <Label className="text-white">Current Billing Period Ends</Label>
+                                        <Label className="text-white">Monthly Billing Period</Label>
                                         <p className="text-lg font-semibold text-purple-300">
                                             {format(new Date(subscription.current_period_end * 1000), 'MMMM d, yyyy')}
                                         </p>
