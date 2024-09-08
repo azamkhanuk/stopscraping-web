@@ -19,24 +19,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(400).json({ error: 'Subscription ID is required' });
             }
 
-            // Fetch the Stripe Customer ID from user metadata
-            const user = await fetch(`https://api.clerk.dev/v1/users/${userId}`, {
-                headers: {
-                    Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
-                },
-            }).then(res => res.json());
+            const subscriptions = await stripe.subscriptions.search({
+                query: `metadata['clerkUserId']:'${userId}' AND id:'${subscriptionId}'`,
+            });
 
-            const customerId = user.unsafe_metadata.stripeCustomerId;
-
-            if (!customerId) {
-                return res.status(404).json({ error: 'No Stripe customer found for this user' });
-            }
-
-            // Verify that the subscription belongs to the user
-            const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-
-            if (subscription.customer !== customerId) {
-                return res.status(403).json({ error: 'Forbidden' });
+            if (subscriptions.data.length === 0) {
+                return res.status(404).json({ error: 'Subscription not found or does not belong to this user' });
             }
 
             const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
@@ -46,7 +34,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             res.status(200).json({ success: true, subscription: updatedSubscription });
         } catch (error) {
             console.error('Error cancelling subscription:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            if (error instanceof Stripe.errors.StripeError) {
+                res.status(error.statusCode || 500).json({ error: error.message });
+            } else {
+                res.status(500).json({ error: 'Internal server error' });
+            }
         }
     } else {
         res.setHeader('Allow', 'POST');
