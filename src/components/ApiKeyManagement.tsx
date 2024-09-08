@@ -11,6 +11,7 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { RefreshCw } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { useStripe } from '@stripe/react-stripe-js';
+import { format } from 'date-fns';
 
 interface ApiKey {
     id: string;
@@ -21,6 +22,16 @@ interface ApiKey {
     user_id: string;
 }
 
+interface StripeSubscription {
+    id: string;
+    current_period_end: number;
+    cancel_at_period_end: boolean;
+    price: {
+        unit_amount: number;
+        currency: string;
+    };
+}
+
 export function ApiKeyManagement() {
     const { user } = useUser();
     const { toast } = useToast();
@@ -28,10 +39,12 @@ export function ApiKeyManagement() {
     const [loading, setLoading] = useState(true);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const stripe = useStripe();
+    const [subscription, setSubscription] = useState<StripeSubscription | null>(null);
 
     useEffect(() => {
         if (user) {
             fetchApiKeys();
+            fetchSubscription();
         }
     }, [user]);
 
@@ -195,6 +208,68 @@ export function ApiKeyManagement() {
         }
     };
 
+    const fetchSubscription = async () => {
+        if (!user?.id) return;
+
+        try {
+            const response = await fetch('/api/get-subscription', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.id}`, // Add this line
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch subscription');
+            }
+
+            const data = await response.json();
+            setSubscription(data.subscription);
+        } catch (error) {
+            console.error('Error fetching subscription:', error);
+            toast({
+                title: "Error",
+                description: "Failed to fetch subscription details. Please try again.",
+                duration: 2000,
+            });
+        }
+    };
+
+    const handleCancelSubscription = async () => {
+        if (!user?.id || !subscription) return;
+
+        try {
+            const response = await fetch('/api/cancel-subscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.id}`, // Add this line
+                },
+                body: JSON.stringify({ subscriptionId: subscription.id }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to cancel subscription');
+            }
+
+            toast({
+                title: "Success",
+                description: "Your subscription has been cancelled and will end at the end of the current billing period.",
+                duration: 3000,
+            });
+
+            fetchSubscription(); // Refresh subscription data
+        } catch (error) {
+            console.error('Error cancelling subscription:', error);
+            toast({
+                title: "Error",
+                description: "Failed to cancel subscription. Please try again.",
+                duration: 2000,
+            });
+        }
+    };
+
     if (loading) {
         return <LoadingSpinner />;
     }
@@ -285,6 +360,29 @@ export function ApiKeyManagement() {
                                     {(user?.unsafeMetadata?.pricingPlan as string) || 'Free'}
                                 </p>
                             </div>
+                            {subscription && (
+                                <>
+                                    <div className="space-y-1">
+                                        <Label className="text-white">Subscription Price</Label>
+                                        <p className="text-lg font-semibold text-purple-300">
+                                            {(subscription.price.unit_amount / 100).toFixed(2)} {subscription.price.currency.toUpperCase()} / month
+                                        </p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-white">Current Billing Period Ends</Label>
+                                        <p className="text-lg font-semibold text-purple-300">
+                                            {format(new Date(subscription.current_period_end * 1000), 'MMMM d, yyyy')}
+                                        </p>
+                                    </div>
+                                    <Button
+                                        onClick={handleCancelSubscription}
+                                        className="bg-red-600 text-white hover:bg-red-700 transition-all duration-300"
+                                        disabled={subscription.cancel_at_period_end}
+                                    >
+                                        {subscription.cancel_at_period_end ? 'Cancellation Scheduled' : 'Cancel Subscription'}
+                                    </Button>
+                                </>
+                            )}
                             {user?.unsafeMetadata?.pricingPlan === 'Free' && (
                                 <Button
                                     onClick={handleUpgrade}
