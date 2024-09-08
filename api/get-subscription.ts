@@ -8,26 +8,21 @@ const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY!, {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'GET') {
         try {
-            const userId = req.headers.authorization?.split(' ')[1];
+            const stripeCustomerId = req.headers.authorization?.split(' ')[1];
 
-            if (!userId) {
+            if (!stripeCustomerId) {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
 
             const subscriptions = await stripe.subscriptions.list({
+                customer: stripeCustomerId,
                 limit: 1,
                 status: 'active',
-                expand: ['data.customer', 'data.default_payment_method', 'data.items.data.price'],
+                expand: ['data.default_payment_method', 'data.items.data.price'],
             });
 
             if (subscriptions.data.length > 0) {
                 const subscription = subscriptions.data[0];
-                const customer = subscription.customer as Stripe.Customer;
-
-                if (customer.metadata.clerkUserId !== userId) {
-                    return res.status(403).json({ error: 'Forbidden' });
-                }
-
                 res.status(200).json({
                     subscription: {
                         id: subscription.id,

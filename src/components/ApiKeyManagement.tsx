@@ -211,12 +211,18 @@ export function ApiKeyManagement() {
     const fetchSubscription = async () => {
         if (!user?.id) return;
 
+        const stripeCustomerId = user.unsafeMetadata.stripeCustomerId;
+        if (!stripeCustomerId) {
+            console.error('No Stripe customer ID found');
+            return;
+        }
+
         try {
             const response = await fetch('/api/get-subscription', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.id}`, // Add this line
+                    'Authorization': `Bearer ${stripeCustomerId}`,
                 },
             });
 
@@ -239,12 +245,18 @@ export function ApiKeyManagement() {
     const handleCancelSubscription = async () => {
         if (!user?.id || !subscription) return;
 
+        const stripeCustomerId = user.unsafeMetadata.stripeCustomerId;
+        if (!stripeCustomerId) {
+            console.error('No Stripe customer ID found');
+            return;
+        }
+
         try {
             const response = await fetch('/api/cancel-subscription', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.id}`, // Add this line
+                    'Authorization': `Bearer ${stripeCustomerId}`,
                 },
                 body: JSON.stringify({ subscriptionId: subscription.id }),
             });

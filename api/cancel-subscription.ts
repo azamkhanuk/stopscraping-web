@@ -9,9 +9,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'POST') {
         try {
             const { subscriptionId } = req.body;
-            const userId = req.headers.authorization?.split(' ')[1];
+            const stripeCustomerId = req.headers.authorization?.split(' ')[1];
 
-            if (!userId) {
+            if (!stripeCustomerId) {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
 
@@ -19,12 +19,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(400).json({ error: 'Subscription ID is required' });
             }
 
-            const subscriptions = await stripe.subscriptions.search({
-                query: `metadata['clerkUserId']:'${userId}' AND id:'${subscriptionId}'`,
-            });
+            const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
-            if (subscriptions.data.length === 0) {
-                return res.status(404).json({ error: 'Subscription not found or does not belong to this user' });
+            if (subscription.customer !== stripeCustomerId) {
+                return res.status(403).json({ error: 'Forbidden' });
             }
 
             const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
