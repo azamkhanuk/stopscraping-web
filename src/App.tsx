@@ -7,13 +7,13 @@ import { FeatureGrid } from "./components/FeatureGrid"
 import { PricingPlans } from "./components/PricingPlans"
 import { PlanSelection } from "./components/PlanSelection"
 import { LoadingSpinner } from "./components/LoadingSpinner"
-import { Docs } from "./components/Docs"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Toaster } from './components/ui/toaster';
 import { SuccessPage } from "./pages/SuccessPage"
 import { Elements } from '@stripe/react-stripe-js';
 import { stripePromise } from './lib/stripe';
 import NotFound from "./pages/NotFound"
+import Docs from "./components/Docs"
 
 export default function App() {
   const { isSignedIn, isLoaded } = useUser();
