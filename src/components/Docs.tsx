@@ -296,7 +296,7 @@ export default function Docs() {
                                 <Alert className="bg-blue-900/50 border-blue-600">
                                     <AlertTitle className="text-slate-200">Need Help?</AlertTitle>
                                     <AlertDescription className="text-slate-200">
-                                        For any issues or questions about the API, please contact our support team.
+                                        For any issues or questions about the API, please contact me.
                                     </AlertDescription>
                                 </Alert>
                             </CardContent>
