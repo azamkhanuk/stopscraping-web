@@ -1,50 +1,47 @@
-# React + TypeScript + Vite
+# stopscraping.me
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Protect Your Website from AI Scrapers
 
-Currently, two official plugins are available:
+stopscraping.me is a service that provides an always-updated list of AI scrapers' IPs to block, helping you protect your website from unwanted scraping by AI companies like OpenAI and others.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
 
-## Expanding the ESLint configuration
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Shadcn/UI - components
+- Clerk (Authentication)
+- Stripe (Payments)
+- Supabase (Database)
+- Vercel (Hosting and Serverless Functions)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Services & Infra
 
-- Configure the top-level `parserOptions` property like this:
+- Node.js (v14 or later)
+- npm
+- Clerk (Authentication  - Test and Prod)
+- Stripe (Test and Prod)
+- Supabase - PostgresSQL (Database)
+- Vercel
+  - Serverless Functions
+  - Cron Job - `/api/check-subscription-status`
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### Environment Setup
+   ```
+   VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+   VITE_STRIPE_SECRET_KEY=your_stripe_secret_key
+   STRIPE_BASIC_PRICE_ID=your_stripe_basic_plan_price_id
+   ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## API Endpoints
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- `/api/create-checkout-session`: Creates a Stripe checkout session for subscription
+- `/api/verify-payment`: Verifies a completed Stripe payment
+- `/api/get-subscription`: Retrieves subscription details for a user
+- `/api/cancel-subscription`: Cancels a user's subscription
+- `/api/check-subscription-status`: Checks and updates a user's subscription status (cron job)
