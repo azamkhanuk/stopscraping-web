@@ -44,48 +44,66 @@ export function Header() {
                     </SheetTrigger>
                     <SheetContent
                         side="right"
-                        className="w-[300px] sm:w-[400px] bg-black border-white/20 text-white"
+                        className="w-[300px] sm:w-[400px] bg-[#050505] border-white/20 text-white flex flex-col [&>button]:text-white [&>button]:hover:opacity-100 [&>button]:focus:ring-white [&>button]:data-[state=open]:bg-transparent"
                     >
-                        <SheetHeader>
-                            <SheetTitle className="text-left text-white">stopscraping.me</SheetTitle>
-                            <SheetDescription className="sr-only">
-                                This menu provides navigation options and account actions.
-                            </SheetDescription>
-                            <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-black transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-white/10">
-                                <span className="sr-only">Close</span>
-                            </SheetClose>
-                        </SheetHeader>
-                        <div className="mt-6 flex flex-col gap-4">
-                            <Link to="/docs">
-                                <Button className={`w-full ${getLinkStyle('/docs')} transition-colors duration-300`}>
-                                    Docs
-                                </Button>
-                            </Link>
-                            {isSignedIn && hasPlan && (
-                                <Link to="/api-keys">
-                                    <Button className={`w-full ${getLinkStyle('/api-keys')} transition-colors duration-300`}>
-                                        API Keys
-                                    </Button>
-                                </Link>
-                            )}
-                            {!isSignedIn && (
-                                <>
-                                    <Button
-                                        className={`w-full ${getLinkStyle('')} transition-colors duration-300`}
-                                        onClick={handleSignIn}
-                                    >
-                                        Log In
-                                    </Button>
-                                    <Button
-                                        className="w-full bg-white text-black hover:bg-white/90 transition-all duration-300"
-                                        onClick={handleSignUpOrSignIn}
-                                    >
-                                        Sign Up
-                                    </Button>
-                                </>
-                            )}
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-950/30 via-black to-pink-950/30 opacity-90 pointer-events-none"></div>
+                        <div className="absolute inset-0 bg-noise opacity-[0.02] pointer-events-none"></div>
+                        <div className="relative z-10 flex-grow">
+                            <SheetHeader>
+                                <SheetTitle className="text-left text-white">
+                                    stopscraping.me
+                                </SheetTitle>
+                                <SheetDescription className="sr-only">
+                                    This menu provides navigation options and account actions.
+                                </SheetDescription>
+                            </SheetHeader>
+                            <div className="mt-6 flex flex-col gap-4">
+                                <SheetClose asChild>
+                                    <Link to="/">
+                                        <Button className={`w-full ${getLinkStyle('/')} transition-colors duration-300`}>
+                                            Home
+                                        </Button>
+                                    </Link>
+                                </SheetClose>
+                                <SheetClose asChild>
+                                    <Link to="/docs">
+                                        <Button className={`w-full ${getLinkStyle('/docs')} transition-colors duration-300`}>
+                                            Docs
+                                        </Button>
+                                    </Link>
+                                </SheetClose>
+                                {isSignedIn && hasPlan && (
+                                    <SheetClose asChild>
+                                        <Link to="/api-keys">
+                                            <Button className={`w-full ${getLinkStyle('/api-keys')} transition-colors duration-300`}>
+                                                API Keys
+                                            </Button>
+                                        </Link>
+                                    </SheetClose>
+                                )}
+                                {!isSignedIn && (
+                                    <>
+                                        <SheetClose asChild>
+                                            <Button
+                                                className={`w-full ${getLinkStyle('')} transition-colors duration-300`}
+                                                onClick={handleSignIn}
+                                            >
+                                                Log In
+                                            </Button>
+                                        </SheetClose>
+                                        <SheetClose asChild>
+                                            <Button
+                                                className="w-full bg-white text-black hover:bg-white/90 transition-all duration-300"
+                                                onClick={handleSignUpOrSignIn}
+                                            >
+                                                Sign Up
+                                            </Button>
+                                        </SheetClose>
+                                    </>
+                                )}
+                            </div>
                         </div>
-                        <SheetFooter className="absolute bottom-4 left-4 right-4">
+                        <SheetFooter className="mt-auto pb-4">
                             {isSignedIn ? (
                                 <SignOutButton>
                                     <Button className={`w-full ${inactiveStyle} transition-colors duration-300`}>
@@ -94,7 +112,7 @@ export function Header() {
                                 </SignOutButton>
                             ) : (
                                 <SheetClose asChild>
-                                    <Button variant="ghost" className="w-full text-gray-400 hover:text-white hover:bg-white/10">
+                                    <Button variant="ghost" className="w-full text-white hover:text-white hover:bg-white/10">
                                         Close
                                     </Button>
                                 </SheetClose>

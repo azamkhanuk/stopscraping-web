@@ -4,6 +4,7 @@ import { Footer } from "./components/Footer"
 import { Header } from "./components/Header"
 import { Hero } from "./components/Hero"
 import { FeatureGrid } from "./components/FeatureGrid"
+import { VisualRepresentation } from "./components/VisualRepresentation"
 import { PricingPlans } from "./components/PricingPlans"
 import { PlanSelection } from "./components/PlanSelection"
 import { LoadingSpinner } from "./components/LoadingSpinner"
@@ -24,17 +25,19 @@ export default function App() {
 
   return (
     <Elements stripe={stripePromise}>
-      <div className="min-h-screen bg-black text-white relative">
-        <div className="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none"></div>
-        <div className="relative z-10">
+      <div className="min-h-screen bg-[#050505] text-white relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-950/30 via-black to-pink-950/30 opacity-90"></div>
+        <div className="absolute inset-0 bg-noise opacity-[0.02] pointer-events-none"></div>
+        <div className="relative z-10 flex flex-col min-h-screen">
           <Header />
 
-          <main className="container mx-auto px-4 py-8 flex-grow flex flex-col justify-center">
+          <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <Routes>
               <Route path="/" element={
                 <>
                   <Hero />
                   <FeatureGrid />
+                  <VisualRepresentation />
                   <PricingPlans />
                 </>
               } />
