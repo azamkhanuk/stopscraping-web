@@ -1,5 +1,6 @@
+import { Elements } from '@stripe/react-stripe-js';
+import { stripePromise } from './lib/stripe';
 import { useUser } from "@clerk/clerk-react"
-import { ApiKeyManagement } from '@/components/ApiKeyManagement'
 import { Footer } from "./components/Footer"
 import { Header } from "./components/Header"
 import { Hero } from "./components/Hero"
@@ -11,12 +12,12 @@ import { LoadingSpinner } from "./components/LoadingSpinner"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Toaster } from './components/ui/toaster';
 import { SuccessPage } from "./pages/SuccessPage"
-import { Elements } from '@stripe/react-stripe-js';
-import { stripePromise } from './lib/stripe';
-import NotFound from "./pages/NotFound"
+import { ApiKeyManagement } from '@/components/ApiKeyManagement'
 import Docs from "./components/Docs"
+import NotFound from "./pages/NotFound"
 import PrivacyPolicy from "./pages/PrivacyPolicy"
 import TermsAndConditions from "./pages/TermsAndConditions"
+import StructuredData from './components/StructuredData';
 
 export default function App() {
   const { isSignedIn, isLoaded } = useUser();
@@ -24,6 +25,14 @@ export default function App() {
   if (!isLoaded) {
     return <LoadingSpinner />;
   }
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "stopscraping.me",
+    "url": "https://www.stopscraping.me/",
+    "description": "Protect your website from AI scrapers with our up-to-date IP blocking service.",
+  };
 
   return (
     <Elements stripe={stripePromise}>
@@ -58,6 +67,7 @@ export default function App() {
           </main>
           <Footer />
           <Toaster />
+          <StructuredData data={structuredData} />
         </div>
       </div>
     </Elements>
