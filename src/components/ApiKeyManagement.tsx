@@ -212,9 +212,21 @@ export function ApiKeyManagement() {
     const fetchSubscription = async () => {
         if (!user?.id) return;
 
+        const userPlan = user.unsafeMetadata.pricingPlan as string;
+        if (userPlan === 'Free') {
+            // Set subscription to null for free tier users
+            setSubscription(null);
+            return;
+        }
+
         const stripeCustomerId = user.unsafeMetadata.stripeCustomerId;
         if (!stripeCustomerId) {
-            console.error('No Stripe customer ID found');
+            console.error('No Stripe customer ID found for paid user');
+            toast({
+                title: "Error",
+                description: "Unable to fetch subscription details. Please contact support.",
+                duration: 2000,
+            });
             return;
         }
 
@@ -374,7 +386,15 @@ export function ApiKeyManagement() {
                                     {(user?.unsafeMetadata?.pricingPlan as string) || 'Free'}
                                 </p>
                             </div>
-                            {subscription ? (
+                            {(user?.unsafeMetadata?.pricingPlan as string) === 'Free' ? (
+                                <Button
+                                    onClick={handleUpgrade}
+                                    className="bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Processing...' : 'Upgrade to Basic'}
+                                </Button>
+                            ) : subscription ? (
                                 <>
                                     <div className="space-y-1">
                                         <Label className="text-white">Subscription Status</Label>
@@ -405,16 +425,7 @@ export function ApiKeyManagement() {
                                     )}
                                 </>
                             ) : (
-                                <p>No active subscription found.</p>
-                            )}
-                            {(!subscription || subscription.status !== 'active') && (
-                                <Button
-                                    onClick={handleUpgrade}
-                                    className="bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300"
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Processing...' : 'Upgrade to Basic'}
-                                </Button>
+                                <p>Loading subscription details...</p>
                             )}
                         </CardContent>
                     </Card>
