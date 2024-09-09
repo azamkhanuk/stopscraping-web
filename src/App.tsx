@@ -15,6 +15,8 @@ import { Elements } from '@stripe/react-stripe-js';
 import { stripePromise } from './lib/stripe';
 import NotFound from "./pages/NotFound"
 import Docs from "./components/Docs"
+import PrivacyPolicy from "./pages/PrivacyPolicy"
+import TermsAndConditions from "./pages/TermsAndConditions"
 
 export default function App() {
   const { isSignedIn, isLoaded } = useUser();
@@ -49,6 +51,8 @@ export default function App() {
                 isSignedIn ? <ApiKeyManagement /> : <Navigate to="/" />
               } />
               <Route path="/success" element={<SuccessPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
