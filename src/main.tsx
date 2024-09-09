@@ -7,8 +7,6 @@ import './index.css'
 import { dark } from '@clerk/themes'
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/react"
-import '../public/sitemap.xml'
-import '../public/robots.txt'
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
