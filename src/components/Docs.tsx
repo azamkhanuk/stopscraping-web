@@ -16,7 +16,7 @@ export default function Docs() {
     }
 
     return (
-        <div className="bg-black text-white p-4 md:p-8">
+        <div className="text-white p-4 md:p-8">
             <Card className="bg-white/5 backdrop-blur-sm border-white/10">
                 <CardHeader>
                     <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">API Documentation</CardTitle>

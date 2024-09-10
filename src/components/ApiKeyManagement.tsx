@@ -301,10 +301,9 @@ export function ApiKeyManagement() {
     }
 
     const currentApiKey = apiKeys.length > 0 ? apiKeys[0].api_key : 'No API key found';
-    const subscriptionTier = apiKeys.length > 0 ? apiKeys[0].tier : 'Free';
 
     return (
-        <div className="min-h-screen bg-black text-white p-4 md:p-6 lg:p-8">
+        <div className="min-h-screen text-white p-4 md:p-6 lg:p-8">
             <h1 className="text-3xl font-bold mb-6">Welcome, {user?.firstName || 'User'}</h1>
             <Tabs defaultValue="api-key" className="space-y-4">
                 <TabsList className="grid w-full grid-cols-3 bg-white/10">
