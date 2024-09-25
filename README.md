@@ -1,4 +1,6 @@
 # stopscraping.me
+![image](https://github.com/user-attachments/assets/43ffac4c-f871-4d50-95d8-b9435a82a3bc)
+
 
 ## Protect Your Website from AI Scrapers
 
