@@ -1,6 +1,7 @@
 # stopscraping.me
-![image](https://github.com/user-attachments/assets/43ffac4c-f871-4d50-95d8-b9435a82a3bc)
+**Status:** Project archived. Domain discontinued.
 
+![image](https://github.com/user-attachments/assets/43ffac4c-f871-4d50-95d8-b9435a82a3bc)
 
 ## Protect Your Website from AI Scrapers
 
@@ -42,8 +43,11 @@ stopscraping.me is a service that provides an always-updated list of AI scrapers
 
 ## API Endpoints
 
+### Backend project - https://github.com/azamkhanuk/stopscraping-api 
+
 - `/api/create-checkout-session`: Creates a Stripe checkout session for subscription
 - `/api/verify-payment`: Verifies a completed Stripe payment
 - `/api/get-subscription`: Retrieves subscription details for a user
 - `/api/cancel-subscription`: Cancels a user's subscription
 - `/api/check-subscription-status`: Checks and updates a user's subscription status (cron job)
+
