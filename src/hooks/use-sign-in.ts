@@ -1,30 +1,12 @@
-import { useUser, useClerk } from "@clerk/clerk-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 export function useCustomSignIn() {
-    const { isSignedIn, user } = useUser();
-    const clerk = useClerk();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleSignIn = async () => {
-        if (isSignedIn && user) {
-            const pricingPlan = user.unsafeMetadata?.pricingPlan;
-            if (!pricingPlan) {
-                navigate('/select-plan');
-            } else {
-                navigate('/api-keys');
-            }
-        } else {
-            try {
-                await clerk.openSignIn({
-                    redirectUrl: '/api-keys',
-                    afterSignInUrl: '/api-keys',
-                });
-            } catch (error) {
-                console.error('Error during sign-in attempt:', error);
-            }
-        }
-    };
+  const handleSignIn = () => {
+    // Mock function for showcase - navigate to api-keys
+    navigate('/api-keys');
+  };
 
-    return handleSignIn;
+  return handleSignIn;
 }
