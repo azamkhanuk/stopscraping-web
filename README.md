@@ -1,5 +1,5 @@
 # stopscraping.me
-**Status:** Project archived. Domain discontinued.
+> **Status:** Project archived. Domain discontinued.
 
 ![image](https://github.com/user-attachments/assets/43ffac4c-f871-4d50-95d8-b9435a82a3bc)
 
