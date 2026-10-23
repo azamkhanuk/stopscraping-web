@@ -37,12 +37,12 @@ export default function App() {
   return (
     <Elements stripe={stripePromise}>
       <div className='min-h-screen bg-[#050505] text-white relative'>
-        <div className='absolute inset-0 bg-gradient-to-br via-black opacity-90 from-purple-950/30 to-pink-950/30'></div>
+        <div className='absolute inset-0 bg-linear-to-br via-black opacity-90 from-purple-950/30 to-pink-950/30'></div>
         <div className='absolute inset-0 bg-noise opacity-[0.02] pointer-events-none'></div>
         <div className='flex relative z-10 flex-col min-h-screen'>
           <Header />
 
-          <main className='container flex-grow px-4 py-8 mx-auto sm:px-6 lg:px-8'>
+          <main className='container grow px-4 py-8 mx-auto sm:px-6 lg:px-8'>
             <Routes>
               <Route
                 path='/'

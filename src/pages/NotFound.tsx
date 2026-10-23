@@ -28,9 +28,9 @@ export default function NotFound() {
 
     return (
         <div className="min-h-screen text-white flex items-center justify-center p-4">
-            <Card className="w-full max-w-md bg-white/5 backdrop-blur-sm border-white/10">
+            <Card className="w-full max-w-md bg-white/5 backdrop-blur-xs border-white/10">
                 <CardContent className="pt-6 flex flex-col items-center text-center">
-                    <div className="text-9xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
+                    <div className="text-9xl font-bold mb-4 bg-linear-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
                         404
                     </div>
                     <h1 className="text-2xl font-semibold mb-4 text-white">{message}</h1>

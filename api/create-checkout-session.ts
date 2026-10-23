@@ -1,7 +1,7 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY!, { apiVersion: '2025-06-30.basil' });
+const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY!, { apiVersion: '2026-09-30.endive' });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('Received request:', req.method, req.url);
@@ -23,7 +23,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       console.log('Creating Stripe session with priceId:', priceId);
       const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
+        allowed_payment_method_types: ['card'],
         line_items: [{ price: priceId, quantity: 1 }],
         mode: 'subscription',
         success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,

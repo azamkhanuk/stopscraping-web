@@ -17,9 +17,9 @@ export default function Docs() {
 
     return (
         <div className="text-white p-4 md:p-8">
-            <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+            <Card className="bg-white/5 backdrop-blur-xs border-white/10">
                 <CardHeader>
-                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">API Documentation</CardTitle>
+                    <CardTitle className="text-3xl font-bold bg-linear-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">API Documentation</CardTitle>
                     <CardDescription className="text-slate-400">v1.0 of the API</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-8">

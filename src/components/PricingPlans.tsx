@@ -93,7 +93,7 @@ export function PricingPlans() {
 
   return (
     <section className='mt-20 mb-12'>
-      <h2 className='mb-12 text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300'>
+      <h2 className='mb-12 text-3xl font-bold text-center text-transparent bg-clip-text bg-linear-to-r from-purple-300 to-pink-300'>
         Choose Your Plan
       </h2>
       <div className='grid grid-cols-1 gap-8 md:grid-cols-3'>
@@ -104,7 +104,7 @@ export function PricingPlans() {
           return (
             <Card
               key={index}
-              className={`bg-white/5 backdrop-blur-sm border-white/10 hover:bg-white/10 transition-all duration-300 flex flex-col justify-between cursor-pointer ${isDisabled ? 'opacity-50 pointer-events-none' : ''}`}
+              className={`bg-white/5 backdrop-blur-xs border-white/10 hover:bg-white/10 transition-all duration-300 flex flex-col justify-between cursor-pointer ${isDisabled ? 'opacity-50 pointer-events-none' : ''}`}
             >
               <CardHeader className='text-center'>
                 <CardTitle className='mb-2 text-2xl font-bold text-gray-100'>
@@ -115,17 +115,17 @@ export function PricingPlans() {
                 </CardDescription>
               </CardHeader>
               <CardContent className='flex flex-col h-full'>
-                <ul className='flex-grow space-y-3'>
+                <ul className='grow space-y-3'>
                   {tier.features.map((feature, fIndex) => (
                     <li key={fIndex} className='flex items-start'>
                       {typeof feature === 'string' ? (
                         <>
-                          <Check className='flex-shrink-0 mt-1 mr-3 w-5 h-5 text-green-400' />
+                          <Check className='shrink-0 mt-1 mr-3 w-5 h-5 text-green-400' />
                           <span className='text-sm text-gray-300'>{feature}</span>
                         </>
                       ) : (
                         <>
-                          <Wrench className='flex-shrink-0 mt-1 mr-3 w-5 h-5 text-gray-400' />
+                          <Wrench className='shrink-0 mt-1 mr-3 w-5 h-5 text-gray-400' />
                           <span className='text-sm text-gray-400'>{feature.text}</span>
                         </>
                       )}
