@@ -55,7 +55,7 @@ export function Header() {
     <header className='relative z-10 py-6'>
       <div className='container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center'>
         <div
-          className='text-2xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text cursor-pointer'
+          className='text-2xl font-bold bg-linear-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text cursor-pointer'
           onClick={handleLogoClick}
         >
           stopscraping.me

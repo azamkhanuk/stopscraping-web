@@ -14,7 +14,7 @@ export function FeatureGrid() {
     return (
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {features.map((feature, index) => (
-                <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all duration-300 flex flex-col justify-between group">
+                <Card key={index} className="bg-white/10 backdrop-blur-xs border-white/20 hover:bg-white/15 transition-all duration-300 flex flex-col justify-between group">
                     <CardHeader>
                         <feature.icon className="w-10 h-10 mb-3 text-purple-300 group-hover:text-pink-300 transition-colors duration-300" aria-hidden="true" />
                         <CardTitle className="text-gray-100 group-hover:text-white transition-colors duration-300">{feature.title}</CardTitle>

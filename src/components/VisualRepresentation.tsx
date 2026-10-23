@@ -19,7 +19,7 @@ export function VisualRepresentation() {
                     <div className="lg:w-1/2 lg:pr-8 mb-12 lg:mb-0">
                         <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl mb-6">
                             <span className="block">Add the IPs to your</span>
-                            <span className="block bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
+                            <span className="block bg-linear-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
                                 Infrastructure, Firewall or Deny List.
                             </span>
                         </h2>
@@ -52,7 +52,7 @@ export function VisualRepresentation() {
                                     <div className="text-center lg:text-left text-green-400 font-mono mb-4">
                                         AI Access Blocked
                                     </div>
-                                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center lg:text-left">
+                                    <div className="bg-white/10 backdrop-blur-xs rounded-lg p-4 text-center lg:text-left">
                                         <p className="text-sm text-gray-300">Your Web App is Protected</p>
                                         <p className="text-xs text-gray-400 mt-1">Shielded against AI scraping attempts</p>
                                     </div>
@@ -64,7 +64,7 @@ export function VisualRepresentation() {
 
                 {/* Quick Start Section */}
                 <div className="mt-16">
-                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-2xl">
+                    <div className="bg-white/10 backdrop-blur-xs rounded-lg p-4 max-w-2xl">
                         <div className="flex items-center space-x-2 mb-2">
                             <Input
                                 value="https://www.api.stopscraping.me/block-ips"

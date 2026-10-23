@@ -6,7 +6,7 @@ export function Hero() {
 
     return (
         <section className="text-center mb-20">
-            <h2 className="text-5xl font-bold pb-6 bg-gradient-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text">Tired of Getting DDoS'd by AI Companies?</h2>
+            <h2 className="text-5xl font-bold pb-6 bg-linear-to-r from-purple-300 to-pink-300 text-transparent bg-clip-text">Tired of Getting DDoS'd by AI Companies?</h2>
             <p className="text-xl text-gray-300 mb-10">Get an always-updated list of AI scrapers' IPs to block. Currently focused on OpenAI, with more coming soon.</p>
             <Button
                 size="lg"

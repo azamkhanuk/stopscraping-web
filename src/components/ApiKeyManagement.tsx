@@ -61,13 +61,13 @@ export function ApiKeyManagement() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // Mock subscription for showcase
-  const subscription: StripeSubscription = {
+  const [subscription] = useState<StripeSubscription>(() => ({
     id: 'sub_demo123',
     status: 'active',
     current_period_start: Math.floor(Date.now() / 1000),
-    current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days from now
+    current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
     cancel_at_period_end: false,
-  };
+  }));
 
   // Mock user data
   const mockUser = {
@@ -184,7 +184,7 @@ export function ApiKeyManagement() {
         </TabsList>
 
         <TabsContent value='api-key'>
-          <Card className='bg-white/5 backdrop-blur-sm border-white/10'>
+          <Card className='bg-white/5 backdrop-blur-xs border-white/10'>
             <CardHeader>
               <CardTitle className='text-white'>API Key Management</CardTitle>
               <CardDescription className='text-gray-400'>
@@ -192,11 +192,11 @@ export function ApiKeyManagement() {
               </CardDescription>
             </CardHeader>
             <CardContent className='space-y-4'>
-              <div className='space-y-1'>
+              <div>
                 <Label htmlFor='apiKey' className='text-white'>
                   Current API Key
                 </Label>
-                <div className='flex items-center space-x-2'>
+                <div className='mt-1 flex items-center space-x-2'>
                   <Input
                     id='apiKey'
                     value={currentApiKey}
@@ -243,7 +243,7 @@ export function ApiKeyManagement() {
         </TabsContent>
 
         <TabsContent value='subscription'>
-          <Card className='bg-white/5 backdrop-blur-sm border-white/10'>
+          <Card className='bg-white/5 backdrop-blur-xs border-white/10'>
             <CardHeader>
               <CardTitle className='text-white'>Subscription Management</CardTitle>
               <CardDescription className='text-gray-400'>
@@ -305,7 +305,7 @@ export function ApiKeyManagement() {
         </TabsContent>
 
         <TabsContent value='account'>
-          <Card className='bg-white/5 backdrop-blur-sm border-white/10'>
+          <Card className='bg-white/5 backdrop-blur-xs border-white/10'>
             <CardHeader>
               <CardTitle className='text-white'>Account Settings</CardTitle>
               <CardDescription className='text-gray-400'>
@@ -313,9 +313,9 @@ export function ApiKeyManagement() {
               </CardDescription>
             </CardHeader>
             <CardContent className='space-y-4'>
-              <div className='space-y-2'>
+              <div>
                 <Label className='text-white'>Account Information</Label>
-                <div className='text-sm text-gray-400'>
+                <div className='mt-2 text-sm text-gray-400'>
                   <p>
                     Name: <span className='text-gray-300'>{mockUser.firstName} User</span>
                   </p>

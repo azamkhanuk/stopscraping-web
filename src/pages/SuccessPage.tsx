@@ -39,7 +39,7 @@ export function SuccessPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center text-white p-4">
-            <Card className="bg-white/5 backdrop-blur-sm border-white/10 max-w-md w-full">
+            <Card className="bg-white/5 backdrop-blur-xs border-white/10 max-w-md w-full">
                 <CardHeader className="text-center">
                     <div className="mx-auto mb-4">
                         <CheckCircle className="w-16 h-16 text-green-400" />

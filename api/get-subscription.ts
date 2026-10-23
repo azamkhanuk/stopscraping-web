@@ -1,7 +1,7 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY!, { apiVersion: '2025-06-30.basil' });
+const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY!, { apiVersion: '2026-09-30.endive' });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'GET') {
